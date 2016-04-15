@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:focusable="true"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:clickable="true"
+    android:background="?android:attr/selectableItemBackground"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cv"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            >
+
+                <com.facebook.login.widget.ProfilePictureView
+                    android:id="@+id/friendicon"
+                    android:layout_width="73dp"
+                    android:layout_height="69dp" />
+
+
+                <TextView
+                    android:id="@+id/friendnametext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Friend name"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/friendicon"
+                    android:layout_toEndOf="@+id/friendicon"
+                    android:layout_marginLeft="38dp"
+                    android:layout_marginStart="38dp"
+                    android:layout_marginTop="26dp" />
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout >
