@@ -1,13 +1,22 @@
 package com.jwetherell.augmented_reality.activity;
 
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Toast;
 
+import com.jwetherell.augmented_reality.R;
 import com.jwetherell.augmented_reality.data.ARData;
+import com.jwetherell.augmented_reality.data.GooglePlacesDataSource;
+import com.jwetherell.augmented_reality.data.LocalDataSource;
 import com.jwetherell.augmented_reality.data.NetworkDataSource;
+import com.jwetherell.augmented_reality.data.WikipediaDataSource;
 import com.jwetherell.augmented_reality.ui.Marker;
 import com.jwetherell.augmented_reality.widget.VerticalTextView;
 
@@ -17,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +52,7 @@ public class Demo extends AugmentedReality {
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        /*super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
         // Create toast
         myToast = new Toast(getApplicationContext());
@@ -65,7 +75,7 @@ public class Demo extends AugmentedReality {
         NetworkDataSource wikipedia = new WikipediaDataSource(this.getResources());
         sources.put("wiki", wikipedia);
         NetworkDataSource googlePlaces = new GooglePlacesDataSource(this.getResources());
-        sources.put("googlePlaces", googlePlaces);*/
+        sources.put("googlePlaces", googlePlaces);
     }
 
     /**
@@ -75,8 +85,8 @@ public class Demo extends AugmentedReality {
     public void onStart() {
         super.onStart();
 
-        /*Location last = ARData.getCurrentLocation();
-        updateData(last.getLatitude(), last.getLongitude(), last.getAltitude());*/
+        Location last = ARData.getCurrentLocation();
+        updateData(last.getLatitude(), last.getLongitude(), last.getAltitude());
     }
 
     /**
@@ -84,8 +94,8 @@ public class Demo extends AugmentedReality {
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        /*MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);*/
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
         return true;
     }
 
@@ -119,7 +129,7 @@ public class Demo extends AugmentedReality {
     public void onLocationChanged(Location location) {
         super.onLocationChanged(location);
 
-       /* updateData(location.getLatitude(), location.getLongitude(), location.getAltitude());*/
+        /*updateData(location.getLatitude(), location.getLongitude(), location.getAltitude());*/
     }
 
     /**
@@ -127,8 +137,8 @@ public class Demo extends AugmentedReality {
      */
     @Override
     protected void markerTouched(Marker marker) {
-        /*text.setText(marker.getName());
-        myToast.show();*/
+        text.setText(marker.getName());
+        myToast.show();
     }
 
     /**
@@ -137,12 +147,12 @@ public class Demo extends AugmentedReality {
     @Override
     protected void updateDataOnZoom() {
         super.updateDataOnZoom();
-        /*Location last = ARData.getCurrentLocation();
-        updateData(last.getLatitude(), last.getLongitude(), last.getAltitude());*/
+        Location last = ARData.getCurrentLocation();
+        updateData(last.getLatitude(), last.getLongitude(), last.getAltitude());
     }
 
     private void updateData(final double lat, final double lon, final double alt) {
-        /*try {
+        try {
             exeService.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -154,7 +164,7 @@ public class Demo extends AugmentedReality {
             Log.w(TAG, "Not running new download Runnable, queue is full.");
         } catch (Exception e) {
             Log.e(TAG, "Exception running download Runnable.", e);
-        }*/
+        }
     }
 
     private static boolean download(NetworkDataSource source, double lat, double lon, double alt) {

@@ -128,6 +128,7 @@
     <orderEntry type="library" exported="" name="customtabs-23.2.1" level="project" />
     <orderEntry type="library" exported="" name="aws-android-sdk-ddb-2.2.14" level="project" />
     <orderEntry type="library" exported="" name="play-services-basement-8.4.0" level="project" />
+    <orderEntry type="module" module-name="androidAugmentRealityFramework" exported="" />
     <orderEntry type="module" module-name="linkedin-sdk" exported="" />
   </component>
 </module>

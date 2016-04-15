@@ -53,7 +53,7 @@ ADDED from AndroidManifest.xml:15:5
 		ADDED from AndroidManifest.xml:15:18
 	android:theme
 		ADDED from AndroidManifest.xml:17:9
-activity#com.jwetherell.augmented_reality.com.clay.hotncold.Demo
+activity#com.jwetherell.augmented_reality.activity.Demo
 ADDED from AndroidManifest.xml:20:9
 	android:screenOrientation
 		ADDED from AndroidManifest.xml:22:19

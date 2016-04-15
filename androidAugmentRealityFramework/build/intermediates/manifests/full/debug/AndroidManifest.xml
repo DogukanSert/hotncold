@@ -20,7 +20,7 @@
         android:label="@string/app_name"
         android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         <activity
-            android:name="com.jwetherell.augmented_reality.com.clay.hotncold.Demo"
+            android:name="com.jwetherell.augmented_reality.activity.Demo"
             android:label="@string/app_name"
             android:screenOrientation="landscape" >
             <intent-filter>

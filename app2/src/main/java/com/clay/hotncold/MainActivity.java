@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity
                         return true;
 
                     case R.id.camera:
-                        Intent in = new Intent(getApplicationContext(), CameraViewActivity.class);
+                        Intent in = new Intent(getApplicationContext(), CameraActivity.class);
                         startActivity(in);
 
                         return true;

@@ -1,8 +1,5 @@
 package com.jwetherell.augmented_reality.data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +8,9 @@ import android.graphics.Color;
 import com.jwetherell.augmented_reality.R;
 import com.jwetherell.augmented_reality.ui.IconMarker;
 import com.jwetherell.augmented_reality.ui.Marker;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class should be used as a example local data source. It is an example of
@@ -33,7 +33,7 @@ public class LocalDataSource extends DataSource {
     protected void createIcon(Resources res) {
         if (res == null) throw new NullPointerException();
 
-        icon = BitmapFactory.decodeResource(res, R.drawable.icon);
+        icon = BitmapFactory.decodeResource(res, R.drawable.buzz);
     }
 
     public List<Marker> getMarkers() {
