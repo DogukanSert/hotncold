@@ -123,7 +123,7 @@ public class GooglePlacesDataSource extends NetworkDataSource {
 			if (lat != null) {
 				String user = jo.getString("name");
 
-				ma = new IconMarker(user + ": " + jo.getString("name"), lat, lon, 0, Color.RED, icon);
+				ma = new IconMarker(user + ": " + jo.getString("name"), lat, lon, 1, Color.RED, icon);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
