@@ -1,5 +1,10 @@
 package com.jwetherell.augmented_reality.data;
 
+import com.jwetherell.augmented_reality.ui.Marker;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,12 +13,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.jwetherell.augmented_reality.ui.Marker;
 
 
 /**
@@ -31,6 +32,7 @@ public abstract class NetworkDataSource extends DataSource {
     protected List<Marker> markersCache = null;
 
     public abstract String createRequestURL(double lat, double lon, double alt, float radius, String locale);
+    public List<Marker> getMarkerList(int type, String id, float radius, ArrayList<String> s){return markersCache;}
 
     public abstract List<Marker> parse(JSONObject root);
 

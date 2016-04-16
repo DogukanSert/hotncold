@@ -1,7 +1,5 @@
 package com.jwetherell.augmented_reality.ui;
 
-import java.text.DecimalFormat;
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -19,6 +17,8 @@ import com.jwetherell.augmented_reality.ui.objects.PaintableGps;
 import com.jwetherell.augmented_reality.ui.objects.PaintableObject;
 import com.jwetherell.augmented_reality.ui.objects.PaintablePoint;
 import com.jwetherell.augmented_reality.ui.objects.PaintablePosition;
+
+import java.text.DecimalFormat;
 
 /**
  * This class will represent a physical location and will calculate it's
@@ -318,6 +318,11 @@ public class Marker implements Comparable<Marker> {
                                  location.getLongitude(), 
                                  distanceArray);
         distance = distanceArray[0];
+        Location myLoc = ARData.getCurrentLocation();
+        distance = distFrom((float)physicalLocation.getLatitude(),
+                (float)physicalLocation.getLongitude(),(float)location.getLatitude(), (float)location.getLongitude());
+
+        Log.d("kaan", "distance " + distance + " ");
     }
 
     /**
@@ -706,5 +711,18 @@ public class Marker implements Comparable<Marker> {
                     "ll=("+llX+", "+llY+") "+
                     "lr=("+lrX+", "+lrY+")";
         }
+    }
+
+    public static float distFrom(float lat1, float lng1, float lat2, float lng2) {
+        double earthRadius = 6371000; //meters
+        double dLat = Math.toRadians(lat2-lat1);
+        double dLng = Math.toRadians(lng2-lng1);
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLng/2) * Math.sin(dLng/2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        float dist = (float) (earthRadius * c);
+
+        return dist;
     }
 }

@@ -1,5 +1,6 @@
 package com.clay.hotncold;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.clay.hotncold.group.CreateGroupFragment;
+import com.clay.hotncold.group.GroupFragment;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -33,7 +36,7 @@ import java.net.URLConnection;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements GroupFragment.GroupFragmentListener
 {
 
     //Defining Variables
@@ -169,6 +172,10 @@ public class MainActivity extends AppCompatActivity
                         return true;
                     case R.id.groups:
                         Toast.makeText(getApplicationContext(),"Groups Selected",Toast.LENGTH_SHORT).show();
+                        GroupFragment frag = new GroupFragment();
+                        android.support.v4.app.FragmentTransaction fragmentTransaction4 = getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction4.replace(R.id.frame, frag);
+                        fragmentTransaction4.commit();
                         return true;
                     case R.id.settings:
                         Toast.makeText(getApplicationContext(),"Settings Selected",Toast.LENGTH_SHORT).show();
@@ -311,4 +318,25 @@ public class MainActivity extends AppCompatActivity
     {
         return "http://graph.facebook.com/"+id+"/picture?type=square";
     }
+    @Override
+    public void fabButtonClicked(View v) {
+        CreateGroupFragment cb = new CreateGroupFragment();
+        FragmentManager fm = getFragmentManager();
+        android.support.v4.app.FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frame, cb);
+        transaction.commit();
+    }
+
+
+
+    // TODO: DB işi var yine amk
+    public void doneButtonClicked(View v) {
+        Toast.makeText( v.getContext(), "Group has been created successfully.", Toast.LENGTH_SHORT).show();
+        GroupFragment cb = new GroupFragment();
+        FragmentManager fm = getFragmentManager();
+        android.support.v4.app.FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frame, cb);
+        transaction.commit();
+    }
+
 }

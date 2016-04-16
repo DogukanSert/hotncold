@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="#ffffff">
+
+    <ImageView
+        android:id="@+id/groupicon"
+        android:layout_width="@dimen/list_item_avatar_size"
+        android:layout_height="@dimen/list_item_avatar_size"
+        android:src="@drawable/ic_group_icon"
+        android:layout_marginLeft="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="45dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <!-- Editext for Search -->
+    <EditText android:id="@+id/inputGroupName"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter group name"
+        android:inputType="textVisiblePassword"
+        android:layout_alignTop="@+id/groupicon"
+        android:layout_toRightOf="@+id/groupicon"
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp" />
+
+    <EditText android:id="@+id/inputfriendName"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter your friend name"
+        android:inputType="textVisiblePassword"
+        android:layout_marginTop="32dp"
+        android:layout_below="@+id/inputGroupName"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/friendRecycleView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical"
+                android:layout_below="@+id/inputfriendName"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/doneButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:src="@drawable/ic_done"
+        android:layout_marginRight="36dp"
+        android:layout_marginBottom="47dp"
+        android:layout_marginEnd="36dp"
+        android:clickable="true"
+        android:onClick="doneButtonClicked"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        app:backgroundTint="#046697" />
+
+
+
+</RelativeLayout>
+

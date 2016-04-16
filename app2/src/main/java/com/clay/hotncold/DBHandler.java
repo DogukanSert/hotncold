@@ -204,7 +204,7 @@ public class DBHandler {
         }
     }*/
 
-    public UserLoc getFriendLoc(String id)
+    public static UserLoc getFriendLoc(String id)
     {
         AmazonDynamoDBClient ddb = LoginActivity.clientManager
                 .ddb();
@@ -268,7 +268,7 @@ public class DBHandler {
 
 
 
-    public ArrayList<String> getFriendIds(String me)
+    public static ArrayList<String> getFriendIds(String me)
     {
 
         AmazonDynamoDBClient ddb = LoginActivity.clientManager
@@ -724,6 +724,10 @@ public class DBHandler {
 
         return friends;
     }*/
+    public void createGroup(ArrayList<String> users, String id, String groupName)
+    {
+
+    }
 }
 
 

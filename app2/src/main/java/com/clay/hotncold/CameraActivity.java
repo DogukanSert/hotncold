@@ -2,6 +2,7 @@ package com.clay.hotncold;
 
 import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -12,6 +13,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.jwetherell.augmented_reality.R;
 import com.jwetherell.augmented_reality.activity.AugmentedReality;
 import com.jwetherell.augmented_reality.data.ARData;
@@ -20,12 +22,13 @@ import com.jwetherell.augmented_reality.data.NetworkDataSource;
 import com.jwetherell.augmented_reality.ui.Marker;
 import com.jwetherell.augmented_reality.widget.VerticalTextView;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +46,9 @@ public class CameraActivity extends AugmentedReality {
     private static final BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(1);
     private static final ThreadPoolExecutor exeService = new ThreadPoolExecutor(1, 1, 20, TimeUnit.SECONDS, queue);
     private static final Map<String, NetworkDataSource> sources = new ConcurrentHashMap<String, NetworkDataSource>();
+    NetworkDataSource googlePlaces;
+    ArrayList<String> friends;
+    public String id;
 
     private static Toast myToast = null;
     private static VerticalTextView text = null;
@@ -53,6 +59,17 @@ public class CameraActivity extends AugmentedReality {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        id = AccessToken.getCurrentAccessToken().getUserId();
+        friends = null;
+        CameraActivity.GetFriendIds a = new CameraActivity.GetFriendIds();
+        a.execute(id);
+        try {
+            friends = a.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
 
         // Create toast
         myToast = new Toast(getApplicationContext());
@@ -74,8 +91,10 @@ public class CameraActivity extends AugmentedReality {
 
         /*NetworkDataSource wikipedia = new WikipediaDataSource(this.getResources());
         sources.put("wiki", wikipedia);*/
-        NetworkDataSource googlePlaces = new GooglePlacesDataSource(this.getResources());
+        googlePlaces = new GooglePlacesDataSource(this.getResources());
         sources.put("googlePlaces", googlePlaces);
+
+
     }
 
     /**
@@ -129,7 +148,7 @@ public class CameraActivity extends AugmentedReality {
     public void onLocationChanged(Location location) {
         super.onLocationChanged(location);
 
-        /*updateData(location.getLatitude(), location.getLongitude(), location.getAltitude());*/
+        updateData(location.getLatitude(), location.getLongitude(), location.getAltitude());
     }
 
     /**
@@ -152,22 +171,25 @@ public class CameraActivity extends AugmentedReality {
     }
 
     private void updateData(final double lat, final double lon, final double alt) {
+        Log.d("kaan", "update Data");
+        /*if(googlePlaces != null)
+            ARData.addMarkers(googlePlaces.getMarkerList(2, AccessToken.getCurrentAccessToken().getUserId(), ARData.getRadius()));*/
         try {
             exeService.execute(new Runnable() {
                 @Override
                 public void run() {
                     for (NetworkDataSource source : sources.values())
-                        download(source, lat, lon, alt);
+                        ARData.addMarkers(source.getMarkerList(2, id, ARData.getRadius(),friends));
                 }
             });
         } catch (RejectedExecutionException rej) {
-            Log.w(TAG, "Not running new download Runnable, queue is full.");
+            Log.w(TAG, "Not running new download Runnable, queue is full." + rej.toString());
         } catch (Exception e) {
-            Log.e(TAG, "Exception running download Runnable.", e);
+            Log.e(TAG, "Exception running download Runnable. " + e.toString());
         }
     }
 
-    private static boolean download(NetworkDataSource source, double lat, double lon, double alt) {
+    /*private static boolean download(NetworkDataSource source, double lat, double lon, double alt) {
         if (source == null) return false;
 
         String url = null;
@@ -177,14 +199,34 @@ public class CameraActivity extends AugmentedReality {
             return false;
         }
 
-        List<Marker> markers = null;
-        try {
-            markers = source.parse(url);
-        } catch (NullPointerException e) {
-            return false;
-        }
+        Log.d("kaan", "download");
+        List<Marker> markers = source.getMarkerList(2, AccessToken.getCurrentAccessToken().getUserId(), ARData.getRadius());
 
         ARData.addMarkers(markers);
         return true;
+    }*/
+
+    private class GetFriendIds extends
+            AsyncTask<String, Void, ArrayList<String>> {
+        //private ProgressDialog dialog;
+
+        public GetFriendIds() {
+            //dialog = new ProgressDialog(FriendListActivity.class.getC);
+        }
+
+        protected void onPreExecute() {
+            //this.dialog.setMessage("Progress start");
+            //this.dialog.show();
+        }
+
+        protected ArrayList<String> doInBackground(String... f) {
+            return DBHandler.getFriendIds(f[0]);
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> aVoid) {
+            super.onPostExecute(aVoid);
+            //dialog.dismiss();
+        }
     }
 }

@@ -4,19 +4,21 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.Location;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import com.jwetherell.augmented_reality.R;
+import com.jwetherell.augmented_reality.data.ARData;
 import com.jwetherell.augmented_reality.data.NetworkDataSource;
 import com.jwetherell.augmented_reality.ui.IconMarker;
 import com.jwetherell.augmented_reality.ui.Marker;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * This class extends DataSource to fetch data from Google Places.
@@ -59,9 +61,53 @@ public class GooglePlacesDataSource extends NetworkDataSource {
 	 * {@inheritDoc}
 	 */
 
+
+    /**
+     * Type 0 -----> a friend with id
+     * Type 1 -----> a group with id
+     * Type 2 -----> all friends
+     *
+     */
+
+    @Override
+    public List<Marker> getMarkerList(int type, String id, float radius, ArrayList<String> friends)
+    {
+        List<Marker> markers = new ArrayList<>();
+        Location last = ARData.getCurrentLocation();
+        float myLat = (float) last.getLatitude();
+        float myLon = (float) last.getLongitude();
+
+        if(type == 0)
+            ;
+        else if(type == 1)
+            ;
+        else if(type == 2) {
+
+            for(int i =0; i<friends.size(); i++)
+            {
+                Log.d("kaan" , i + "th getting friend");
+                UserLoc us;
+                GooglePlacesDataSource.GetUserLoc x = new GooglePlacesDataSource.GetUserLoc();
+                x.execute(friends.get(i));
+                us = null;
+                try {
+                    us = x.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+                if(distFrom(myLat, myLon, (float)us.getLat(), (float)us.getLon()) < radius) {
+                    markers.add(new IconMarker(us.getId(), us.getLat(), us.getLon(), 0, Color.RED, icon));
+                    Log.d("kaan", us.getId());
+                }
+            }
+
+        }
+        return markers;
+    }
+
 	@Override
 	public List<Marker> parse(String URL) {
-		if (URL == null) throw new NullPointerException();
+		/*if (URL == null) throw new NullPointerException();
 
 		InputStream stream = null;
 		stream = getHttpGETInputStream(URL);
@@ -79,12 +125,13 @@ public class GooglePlacesDataSource extends NetworkDataSource {
 		}
 		if (json == null) throw new NullPointerException();
 
-		return parse(json);
+		return parse(json);*/
+        return null;
 	}
 
 	@Override
 	public List<Marker> parse(JSONObject root) {
-		if (root == null) throw new NullPointerException();
+		/*if (root == null) throw new NullPointerException();
 
 		JSONObject jo = null;
 		JSONArray dataArray = null;
@@ -102,10 +149,11 @@ public class GooglePlacesDataSource extends NetworkDataSource {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		return markers;
+		return markers;*/
+        return null;
 	}
 
-	private Marker processJSONObject(JSONObject jo) {
+	/*private Marker processJSONObject(JSONObject jo) {
 		if (jo == null) throw new NullPointerException();
 
 		if (!jo.has("geometry")) throw new NullPointerException();
@@ -129,5 +177,45 @@ public class GooglePlacesDataSource extends NetworkDataSource {
 			e.printStackTrace();
 		}
 		return ma;
-	}
+	}*/
+
+    public static float distFrom(float lat1, float lng1, float lat2, float lng2) {
+        double earthRadius = 6371000; //meters
+        double dLat = Math.toRadians(lat2-lat1);
+        double dLng = Math.toRadians(lng2-lng1);
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLng/2) * Math.sin(dLng/2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        float dist = (float) (earthRadius * c);
+
+        return dist;
+    }
+
+    private class GetUserLoc extends
+            AsyncTask<String, Void, UserLoc> {
+        //private ProgressDialog dialog;
+
+        public GetUserLoc() {
+            //dialog = new ProgressDialog(FriendListActivity.class.getC);
+        }
+
+        protected void onPreExecute() {
+            //this.dialog.setMessage("Progress start");
+            //this.dialog.show();
+        }
+
+        protected UserLoc doInBackground(String... f) {
+            return DBHandler.getFriendLoc(f[0]);
+        }
+
+        @Override
+        protected void onPostExecute(UserLoc aVoid) {
+            super.onPostExecute(aVoid);
+            //dialog.dismiss();
+        }
+    }
+
+
+
 }
