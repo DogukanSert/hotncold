@@ -1,48 +1,55 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+<com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:swipe="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipe_friend"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:focusable="true"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:paddingTop="5dp"
-    android:paddingBottom="5dp"
-    android:clickable="true"
-    android:background="?android:attr/selectableItemBackground"
-    android:orientation="vertical">
+    swipe:leftEdgeSwipeOffset="0dp"
+    swipe:rightEdgeSwipeOffset="0dp">
 
-    <android.support.v7.widget.CardView
+    <!--Bottom View For Right to Left-->
+
+    <LinearLayout
+        android:id="@+id/bottom_wrapper"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:weightSum="1">
+
+        <ImageButton
+            android:id="@+id/deleteFriendButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:gravity="center"
+            android:onClick="deleteButtonClicked"
+            android:src="@drawable/ic_delete" />
+    </LinearLayout>
+
+    <!-- Top View,  Row itemView of RecyclerView -->
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/cv"
-        >
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:gravity="center_vertical">
 
-        <RelativeLayout
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/avatar"
+            android:layout_width="@dimen/list_item_avatar_size"
+            android:layout_height="@dimen/list_item_avatar_size"
+            android:layout_marginRight="16dp"/>
+
+        <TextView
+            android:id="@+id/friendname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            >
+            android:text="Add friend to group"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/friendProfile"
+            android:layout_toEndOf="@+id/friendProfile" />
 
-                <com.facebook.login.widget.ProfilePictureView
-                    android:id="@+id/friendicon"
-                    android:layout_width="73dp"
-                    android:layout_height="69dp" />
+    </LinearLayout>
 
-
-                <TextView
-                    android:id="@+id/friendnametext"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Friend name"
-                    android:layout_alignParentTop="true"
-                    android:layout_toRightOf="@+id/friendicon"
-                    android:layout_toEndOf="@+id/friendicon"
-                    android:layout_marginLeft="38dp"
-                    android:layout_marginStart="38dp"
-                    android:layout_marginTop="26dp" />
-
-        </RelativeLayout>
-
-    </android.support.v7.widget.CardView>
-
-</LinearLayout >
+</com.daimajia.swipe.SwipeLayout>

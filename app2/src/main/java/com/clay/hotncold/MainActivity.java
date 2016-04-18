@@ -10,6 +10,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.clay.hotncold.group.CreateGroupFragment;
+import com.clay.hotncold.group.Group;
 import com.clay.hotncold.group.GroupFragment;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -33,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -321,7 +324,6 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
     @Override
     public void fabButtonClicked(View v) {
         CreateGroupFragment cb = new CreateGroupFragment();
-        FragmentManager fm = getFragmentManager();
         android.support.v4.app.FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frame, cb);
         transaction.commit();
@@ -331,6 +333,25 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
 
     // TODO: DB işi var yine amk
     public void doneButtonClicked(View v) {
+        ArrayList<String> friends = CreateGroupFragment.getSelectedfriend();
+
+        String friendsDB = "";
+
+        for(int i=0; i<friends.size(); i++) {
+            String[] parts = friends.get(i).split("-");
+            friendsDB += parts[1] + "-";
+            Log.d("kaan", friends.get(i));
+        }
+
+        String groupName = CreateGroupFragment.getGroupName() + "-" + AccessToken.getCurrentAccessToken().getUserId();
+
+        Group g = new Group();
+        g.setGroupName(groupName);
+        g.setMyFriends(friendsDB);
+
+        DBHandler.groupInsert(g);
+
+
         Toast.makeText( v.getContext(), "Group has been created successfully.", Toast.LENGTH_SHORT).show();
         GroupFragment cb = new GroupFragment();
         FragmentManager fm = getFragmentManager();
@@ -338,5 +359,6 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
         transaction.replace(R.id.frame, cb);
         transaction.commit();
     }
+
 
 }

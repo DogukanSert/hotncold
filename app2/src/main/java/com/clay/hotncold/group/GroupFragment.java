@@ -27,7 +27,7 @@ import java.util.List;
 
 public class GroupFragment extends Fragment {
 
-    private List<Group> myGroups = new ArrayList<>();
+    private List<Group> myGroups;
     EditText inputGroupSearch;
     private RecyclerView recyclerView;
     private GroupAdapter mAdapter;
@@ -54,7 +54,7 @@ public class GroupFragment extends Fragment {
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         //mAdapter = new GroupAdapter(getData());
 
-        String[] groupnames = {"CS 101", "Close Friends", "Family", "High School", "College", "CS 492", "Digital Design", "Automata Class"};
+        /*String[] groupnames = {"CS 101", "Close Friends", "Family", "High School", "College", "CS 492", "Digital Design", "Automata Class"};
         for(int i = 0; i < groupnames.length; i++){
             Group current = new Group(groupnames[i]);
             myGroups.add(current);
@@ -63,9 +63,18 @@ public class GroupFragment extends Fragment {
             current.addFriendstoGroup("Doğukan Sert");
             current.addFriendstoGroup("Elif Yağmur Eğrice");
             current.addFriendstoGroup("Bahadır Ünal");
-        }
+        }*/
 
-        Log.d("inside", myGroups.get(1).getMyFriends());
+        myGroups = DBHandler.getMyGroups();
+
+        for(Group g : myGroups)
+        {
+            String name = g.getGroupName();
+            String[] parts = name.split("-");
+            g.setGroupName(parts[0]);
+            String myFriends = g.getMyFriends();
+            g.setMyFriends(myFriends);
+        }
 
         mAdapter = new GroupAdapter(myGroups);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());

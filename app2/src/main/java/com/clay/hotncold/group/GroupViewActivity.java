@@ -2,14 +2,12 @@ package com.clay.hotncold.group;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.clay.hotncold.DBHandler;
 import com.clay.hotncold.R;
 
 import java.util.ArrayList;
@@ -34,11 +32,9 @@ public class GroupViewActivity extends AppCompatActivity {
 
         groupname = getIntent().getStringExtra("groupname");
 
-        Group g = new Group(groupname);
+        Group g = DBHandler.getGroup(groupname);
 
         memberList.setText(groupname);
-
-        //Log.d("as", g.getMygroupFriends().toString());
 
         for(int i = 0; i < g.getMygroupFriends().size(); i++)
         {

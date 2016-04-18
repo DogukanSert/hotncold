@@ -5,7 +5,6 @@ import android.bluetooth.le.AdvertiseData;
 import android.bluetooth.le.AdvertiseSettings;
 import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.ParcelUuid;
 import android.util.Log;
 
@@ -13,7 +12,6 @@ import com.facebook.AccessToken;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by ali deniz on 19.03.2016.
@@ -42,14 +40,7 @@ public class CreateBeacon
         this.adv = adv;
         this.advertiseCallback = advertiseCallback;
         id = AccessToken.getCurrentAccessToken().getUserId();
-        CreateBeacon.GetUser x = new CreateBeacon.GetUser();
-        x.execute();
-        us = null;
-        try {
-            us = x.get();
-        } catch (InterruptedException | ExecutionException e) {
-            Log.d("kaan", e.toString());
-        }
+        us = DBHandler.getUser(id);
         startAdvertising();
     }
 
@@ -135,30 +126,5 @@ public class CreateBeacon
         }
         return stringBuilder.toString();
     }*/
-
-
-    private class GetUser extends
-            AsyncTask<Void, Void, User> {
-        //private ProgressDialog dialog;
-
-        public GetUser() {
-            //dialog = new ProgressDialog(FriendListActivity.class.getC);
-        }
-
-        protected void onPreExecute() {
-            //this.dialog.setMessage("Progress start");
-            //this.dialog.show();
-        }
-
-        protected User doInBackground(Void... f) {
-            return DBHandler.getUser(id);
-        }
-
-        @Override
-        protected void onPostExecute(User aVoid) {
-            super.onPostExecute(aVoid);
-            //dialog.dismiss();
-        }
-    }
 
 }

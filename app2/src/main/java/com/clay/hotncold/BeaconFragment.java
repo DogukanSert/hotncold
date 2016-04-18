@@ -13,7 +13,6 @@ import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -41,7 +40,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class BeaconFragment extends Fragment {
 
@@ -341,15 +339,7 @@ public class BeaconFragment extends Fragment {
             }
             friendid = BeaconFragment.hexToString(beaconsNames.get(position));
 
-            User us;
-            BeaconFragment.GetUser x = new BeaconFragment.GetUser();
-            x.execute();
-            us = null;
-            try {
-                us = x.get();
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
+            User us = DBHandler.getUser(friendid);
 
             holder.mBoundString = beaconsNames.get(position);
             holder.userNameTextView.setText(us.getUsername() + " " + us.getSurname());
@@ -536,27 +526,5 @@ public class BeaconFragment extends Fragment {
         return bigInt.toString();
     }
 
-    public static class GetUser extends
-            AsyncTask<Void, Void, User> {
-        //private ProgressDialog dialog;
 
-        public GetUser() {
-            //dialog = new ProgressDialog(FriendListActivity.class.getC);
-        }
-
-        protected void onPreExecute() {
-            //this.dialog.setMessage("Progress start");
-            //this.dialog.show();
-        }
-
-        protected User doInBackground(Void... f) {
-            return DBHandler.getUser(friendid);
-        }
-
-        @Override
-        protected void onPostExecute(User aVoid) {
-            super.onPostExecute(aVoid);
-            //dialog.dismiss();
-        }
-    }
 }

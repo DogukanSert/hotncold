@@ -1,8 +1,6 @@
 package com.clay.hotncold;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,7 +16,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by dogukan on 26.03.16.
@@ -39,14 +36,8 @@ public class FilterFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_filter, container, false);
 
         db = new DBHandler();
-        FilterFragment.GetUsers x = new FilterFragment.GetUsers();
-        x.execute();
-        userObjects = null;
-        try {
-            userObjects = x.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+
+        userObjects = DBHandler.getAllUsers();
 
         users = new String[userObjects.size()];
         userIds = new String[userObjects.size()];
@@ -114,27 +105,5 @@ public class FilterFragment extends Fragment {
         return view;
     }
 
-    private class GetUsers extends
-            AsyncTask<Void, Void, ArrayList<User>> {
-        private ProgressDialog dialog;
 
-        public GetUsers() {
-            dialog = new ProgressDialog(getContext());
-        }
-
-        protected void onPreExecute() {
-            this.dialog.setMessage("Progress start");
-            this.dialog.show();
-        }
-
-        protected ArrayList<User> doInBackground(Void... f) {
-            return DBHandler.getAllUsers();
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<User> aVoid) {
-            super.onPostExecute(aVoid);
-            dialog.dismiss();
-        }
-    }
 }

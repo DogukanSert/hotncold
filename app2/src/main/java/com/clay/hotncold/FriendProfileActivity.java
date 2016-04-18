@@ -1,7 +1,6 @@
 package com.clay.hotncold;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -22,7 +21,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 public class FriendProfileActivity extends AppCompatActivity {
 
@@ -171,14 +169,7 @@ public class FriendProfileActivity extends AppCompatActivity {
         profileImage = (ImageView)findViewById(R.id.backdrop);
         //profileImage.setProfileId(profile.getId());
 
-        FriendProfileActivity.GetUser x = new FriendProfileActivity.GetUser();
-        x.execute();
-        us = null;
-        try {
-            us = x.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        us = DBHandler.getUser(id);
 
         Log.d("kaan", us.getBeaconID() + " ismail");
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -207,29 +198,5 @@ public class FriendProfileActivity extends AppCompatActivity {
     public void getFriendListView(View view){
         Intent i = new Intent(this, FriendListActivity.class);
         startActivity(i);
-    }
-
-    private class GetUser extends
-            AsyncTask<Void, Void, User> {
-        //private ProgressDialog dialog;
-
-        public GetUser() {
-            //dialog = new ProgressDialog(FriendListActivity.class.getC);
-        }
-
-        protected void onPreExecute() {
-            //this.dialog.setMessage("Progress start");
-            //this.dialog.show();
-        }
-
-        protected User doInBackground(Void... f) {
-            return DBHandler.getUser(id);
-        }
-
-        @Override
-        protected void onPostExecute(User aVoid) {
-            super.onPostExecute(aVoid);
-            //dialog.dismiss();
-        }
     }
 }

@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.jwetherell.augmented_reality.R;
@@ -18,7 +17,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * This class extends DataSource to fetch data from Google Places.
@@ -86,15 +84,8 @@ public class GooglePlacesDataSource extends NetworkDataSource {
             for(int i =0; i<friends.size(); i++)
             {
                 Log.d("kaan" , i + "th getting friend");
-                UserLoc us;
-                GooglePlacesDataSource.GetUserLoc x = new GooglePlacesDataSource.GetUserLoc();
-                x.execute(friends.get(i));
-                us = null;
-                try {
-                    us = x.get();
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
+                UserLoc us= DBHandler.getFriendLoc(friends.get(i));
+
                 if(distFrom(myLat, myLon, (float)us.getLat(), (float)us.getLon()) < radius) {
                     markers.add(new IconMarker(us.getId(), us.getLat(), us.getLon(), 0, Color.RED, icon));
                     Log.d("kaan", us.getId());
@@ -192,29 +183,7 @@ public class GooglePlacesDataSource extends NetworkDataSource {
         return dist;
     }
 
-    private class GetUserLoc extends
-            AsyncTask<String, Void, UserLoc> {
-        //private ProgressDialog dialog;
 
-        public GetUserLoc() {
-            //dialog = new ProgressDialog(FriendListActivity.class.getC);
-        }
-
-        protected void onPreExecute() {
-            //this.dialog.setMessage("Progress start");
-            //this.dialog.show();
-        }
-
-        protected UserLoc doInBackground(String... f) {
-            return DBHandler.getFriendLoc(f[0]);
-        }
-
-        @Override
-        protected void onPostExecute(UserLoc aVoid) {
-            super.onPostExecute(aVoid);
-            //dialog.dismiss();
-        }
-    }
 
 
 

@@ -107,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         user = new User(object);
-                        new UserAdd().execute(user);
+                        DBHandler.userInsert(user);
                     }
                 });
 
@@ -132,10 +132,15 @@ public class LoginActivity extends AppCompatActivity {
                                     s += rec.getString("id") + "-";
                                 }
                                 Friendship f = new Friendship();
-                                f.setMe(loginResult.getAccessToken().getUserId());
+                                String id =loginResult.getAccessToken().getUserId();
+                                f.setMe(id);
                                 f.setMyFriends(s);
 
-                                new FriendshipAdd().execute(f);
+                                if(DBHandler.getFriendIds(id)==null) {
+                                    Log.d("kaan", "null geldi ekledi ");
+                                    DBHandler.friendshipInsert(f);
+
+                                }
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -230,23 +235,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    private class UserAdd extends
-            AsyncTask<User, Void, Void> {
 
-        protected Void doInBackground(User... u) {
-            DBHandler.insertUser(u[0]);
-            return null;
-        }
-    }
-
-    private class FriendshipAdd extends
-            AsyncTask<Friendship, Void, Void> {
-
-        protected Void doInBackground(Friendship... f) {
-            DBHandler.insertFriendship(f[0]);
-            return null;
-        }
-    }
 
 
 

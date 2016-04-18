@@ -40,13 +40,15 @@ import java.util.List;
 public class CreateGroupFragment extends Fragment {
 
 
-    EditText inputGroupName;
+    public static EditText inputGroupName;
     private List<String> panpiks = new ArrayList<>();
     private RecyclerView recyclerView;
     private SimpleStringRecyclerViewAdapter mAdapter;
     ProgressDialog dialog;
     DBHandler dbHandler;
     FloatingActionButton doneButton;
+
+    public static ArrayList<String> selectedfriend;
 
     public CreateGroupFragment() {
         // Required empty public constructor
@@ -137,7 +139,7 @@ public class CreateGroupFragment extends Fragment {
         private final TypedValue mTypedValue = new TypedValue();
         private int mBackground;
         private List<String> users;
-        public List<String> selectedUsers;
+        public ArrayList<String> selectedUsers;
 
         @Override
         public int getSwipeLayoutResourceId(int position) {
@@ -208,17 +210,14 @@ public class CreateGroupFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     selectedUsers.add( holder.mBoundString);
+                    Log.d("elif", holder.mBoundString);
                     users.remove(holder.mBoundString);
                     Log.d("elif", users.toString());
                     notifyDataSetChanged();
                     Toast.makeText(v.getContext(), "Clicked on" + holder.userNameTextView.getText().toString(), Toast.LENGTH_SHORT).show();
+                    CreateGroupFragment.setSelectedfriend(selectedUsers);
                 }
             });
-
-
-
-
-
 
             String userId = part2;
             Glide.with(holder.mImageView.getContext())
@@ -237,6 +236,17 @@ public class CreateGroupFragment extends Fragment {
         }
     }
 
+    public static ArrayList<String> getSelectedfriend() {
+        return selectedfriend;
+    }
+
+    public static void setSelectedfriend(ArrayList<String> sf) {
+        selectedfriend = sf;
+    }
+
+    public static String getGroupName() {
+        return inputGroupName.getText().toString();
+    }
 
 }
 

@@ -10,11 +10,19 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.daimajia.swipe.SwipeLayout;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -30,9 +38,10 @@ import java.util.List;
 public class FriendListActivity extends AppCompatActivity {
 
     //private List<User> users = new ArrayList<>();
+    private static ArrayList<String> deletedFriends;
     private List<String> panpiks = new ArrayList<>();
     private RecyclerView recyclerView;
-    private Adapter mAdapter;
+    private SimpleStringRecyclerViewAdapter mAdapter;
     ProgressDialog dialog;
     DBHandler dbHandler;
 
@@ -43,9 +52,9 @@ public class FriendListActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView = (RecyclerView) findViewById(R.id.friend_list_recycler_view);
 
-        mAdapter = new Adapter(panpiks);
+        mAdapter = new SimpleStringRecyclerViewAdapter(this.getApplicationContext(), panpiks);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -54,6 +63,11 @@ public class FriendListActivity extends AppCompatActivity {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(), recyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
+
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
                 String u = panpiks.get(position);
                 String[] parts = u.split("-");
                 String part1 = parts[0]; // 004
@@ -63,23 +77,10 @@ public class FriendListActivity extends AppCompatActivity {
                 i.putExtra("id", part2);
                 startActivity(i);
             }
-
-            @Override
-            public void onLongClick(View view, int position) {
-
-            }
         }));
 
-        dialog = ProgressDialog.show(this, "Finding...","Your friends are hiding :(", false);
+        dialog = ProgressDialog.show(this, "Finding...","Your friends are hiding frown emoticon", false);
 
-        /*final ProgressDialog dialog = new ProgressDialog(this, ProgressDialog.THEME_HOLO_DARK);
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        dialog.setTitle("Finding...");
-        dialog.setMessage("Your friends are hiding :(");
-        dialog.show();*/
-        //dbHandler = new DBHandler();
-
-        //new GetFriends().execute(AccessToken.getCurrentAccessToken().getUserId());
 
         new Thread(new Runnable() {
             @Override
@@ -102,30 +103,6 @@ public class FriendListActivity extends AppCompatActivity {
 
     public void prepareData(String id)
     {
-        /*ArrayList<User> u = dbHandler.getFriends(id);
-        for(int i=0; i<u.size(); i++)
-            users.add(u.get(i));*/
-
-        /*new GraphRequest(loginResult.getAccessToken(), "/me/friends", null, HttpMethod.GET, new GraphRequest.Callback() {
-            public void onCompleted(GraphResponse response) {
-
-                if (dbHandler.isFriendsNull(loginResult.getAccessToken().getUserId())) {
-                    try {
-                        JSONArray friends = response.getJSONObject().getJSONArray("data");
-
-                        for (int i = 0; i < friends.length(); i++) {
-                            JSONObject rec = friends.getJSONObject(i);
-                            dbHandler.addFriendToDB(loginResult.getAccessToken().getUserId(), rec.getString("id"));
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    Log.d("elif", response.getJSONObject().toString());
-                }
-            }
-        }
-        ).executeAsync();*/
-
         new GraphRequest(AccessToken.getCurrentAccessToken(), "/me/friends",
                 null,
                 HttpMethod.GET,
@@ -148,16 +125,6 @@ public class FriendListActivity extends AppCompatActivity {
                     }
                 }
         ).executeAsync();
-
-        /*new GraphRequest(AccessToken.getCurrentAccessToken(), "/1187807821254099",
-                null,
-                HttpMethod.GET,
-                new GraphRequest.Callback() {
-                    public void onCompleted(GraphResponse response) {
-                        Log.d("kaan", response.getJSONObject().optString("name"));
-                    }
-                }
-        ).executeAsync();*/
 
 
     }
@@ -214,33 +181,132 @@ public class FriendListActivity extends AppCompatActivity {
         }
     }
 
-    /*private class GetFriends extends AsyncTask<String, Integer, ArrayList<User>> {
+    public void deleteButtonClicked(View v)
+    {
+        Toast.makeText( v.getContext(), "User has been deleted successfully.", Toast.LENGTH_SHORT).show();
+
+        mAdapter.notifyDataSetChanged();
+    }
+
+
+    public static class SimpleStringRecyclerViewAdapter
+            extends RecyclerView.Adapter<SimpleStringRecyclerViewAdapter.ViewHolder> {
+
+        private final TypedValue mTypedValue = new TypedValue();
+        private int mBackground;
+        private List<String> users;
+        public ArrayList<String> selectedUsers;
+
+
+        public static class ViewHolder extends RecyclerView.ViewHolder {
+            public String mBoundString;
+
+            public final View mView;
+            public final ImageView mImageView;
+            public final TextView userNameTextView;
+            public final SwipeLayout swipeLayout;
+
+            ImageButton deleteFriendButton;
+
+            public ViewHolder(View view) {
+                super(view);
+                mView = view;
+                mImageView = (ImageView) view.findViewById(R.id.avatar);
+                userNameTextView = (TextView) view.findViewById(R.id.friendname);
+                swipeLayout = (SwipeLayout) itemView.findViewById(R.id.swipe_friend);
+                deleteFriendButton = (ImageButton) itemView.findViewById(R.id.deleteFriendButton);
+            }
+
+            @Override
+            public String toString() {
+                return super.toString() + " '" + userNameTextView.getText();
+            }
+        }
+
+
+        public String getValueAt(int position) {
+            return users.get(position);
+        }
+
+        public SimpleStringRecyclerViewAdapter(Context context, List<String> items) {
+            context.getTheme().resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
+            mBackground = mTypedValue.resourceId;
+            users = items;
+            selectedUsers = new ArrayList<>();
+        }
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // DIALOG_DOWNLOAD_PROGRESS is defined as 0 at start of class
-            //showDialog(DIALOG_DOWNLOAD_PROGRESS);
-        }
-
-        protected ArrayList<User> doInBackground(String... me) {
-            //ArrayList<User> users = new ArrayList<>();
-
-            ArrayList<User> u = dbHandler.getFriends(me[0]);
-            for(int i=0; i<u.size(); i++)
-                users.add(u.get(i));
-            return null;
-        }
-
-        protected void onProgressUpdate(Integer... progress) {
-            //setProgressPercent(progress[0]);
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.friend_row, parent, false);
+            view.setBackgroundResource(mBackground);
+            return new ViewHolder(view);
         }
 
         @Override
-        protected void onPostExecute(ArrayList<User> users) {
-            super.onPostExecute(users);
-            mAdapter.notifyDataSetChanged();
+        public void onBindViewHolder(final ViewHolder holder, final int position) {
+
+
+            holder.mBoundString = users.get(position);
+            String[] parts = holder.mBoundString.split("-");
+            String part1 = parts[0]; // 004
+            String part2 = parts[1]; // 034556
+            holder.userNameTextView.setText(part1);
+            holder.swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
+
+            // Drag From Right
+            holder.swipeLayout.addDrag(SwipeLayout.DragEdge.Right, holder.swipeLayout.findViewById(R.id.bottom_wrapper));
+
+
+            holder.deleteFriendButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    selectedUsers.add(holder.mBoundString);
+                    users.remove(holder.mBoundString);
+                    Log.d("kaan", holder.mBoundString);
+                    notifyDataSetChanged();
+                    Toast.makeText(v.getContext(), "Clicked on" + holder.userNameTextView.getText().toString(), Toast.LENGTH_SHORT).show();
+                    setDeletedFriends(selectedUsers);
+                }
+            });
+
+            String userId = part2;
+            Glide.with(holder.mImageView.getContext())
+                    .load( getProfilePicture( userId ) )
+                    .fitCenter()
+                    .into(holder.mImageView);
         }
-    }*/
+
+        @Override
+        public int getItemCount() {
+            return users.size();
+        }
+
+        String getProfilePicture( String userId ) {
+            return "http://graph.facebook.com/" + userId + "/picture?type=square";
+        }
+    }
+
+    public static ArrayList<String> getDeletedFriends()
+    {
+        return deletedFriends;
+    }
+
+    public static void setDeletedFriends(ArrayList<String> del)
+    {
+        deletedFriends = del;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d("elif", "sa");
+        ArrayList<String> deleted = getDeletedFriends();
+        DBHandler.updateUserFriend(deleted);
+        Log.d("elif", "as1");
+        Intent i = new Intent(this, ProfileFragment.class);
+        startActivity(i);
+        Log.d("elif", "as2");
+    }
+
 
 }

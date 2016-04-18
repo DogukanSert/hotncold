@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -32,7 +31,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 /**
  * A fragment that launches other parts of the demo application.
@@ -42,42 +40,17 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
     MapView mapView;
     GoogleMap map;
 
-    DBHandler dbHandler;
-
-    /**
-     location
-     */
     boolean isGPSEnabled = false;
     boolean isNetworkEnabled = false;
-    boolean canGetLocation = false;
-    Location location; // location
     double latitude; // latitude
     double longitude; // longitude
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1;
-    private static final long MIN_TIME_BW_UPDATES = 1000 ;
     protected LocationManager locationManager;
 
-    /**
-     location
-     */
-
-
-    /**
-     sensor
-     */
-
-    private SensorManager mSensorManager;
-    private Sensor mSensor;
-    float[] vals;
     static Marker[] markers;
     static boolean cont;
 
     static String id;
     static String friendid;
-
-    /**
-     * sensor
-     */
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -88,7 +61,6 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
 
         id = AccessToken.getCurrentAccessToken().getUserId();
 
-        dbHandler = new DBHandler();
         startMap();
 
         return v;
@@ -115,15 +87,7 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
             @Override
             public boolean onMarkerClick(Marker marker) {
                 friendid = marker.getTitle();
-                MapFragment.GetUser x = new MapFragment.GetUser();
-                x.execute();
-                User us = null;
-                try {
-                    us = x.get();
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
-                }
-
+                User us = DBHandler.getUser(friendid);
                 assert us != null;
                 Toast toast = Toast.makeText(getContext(), us.getUsername() + " " + us.getSurname()
                         + " clicked.", Toast.LENGTH_SHORT);
@@ -136,18 +100,6 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
                 return false;
             }
         });
-
-
-
-        /***/
-
-        /***/
-        mSensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
-
-        mSensorManager.registerListener(this,mSensor,SensorManager.SENSOR_DELAY_NORMAL);
-        vals = new float[3];
-        /***/
 
         latitude = 39.92;
         longitude = 32.86;
@@ -177,14 +129,14 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                ArrayList<String> friends = dbHandler.getFriendIds(AccessToken.getCurrentAccessToken().getUserId());
+                ArrayList<String> friends = DBHandler.getFriendIds(AccessToken.getCurrentAccessToken().getUserId());
 
                 markers = new Marker[friends.size()];
                 cont=true;
 
                 for(int i=0; i<friends.size(); i++)
                 {
-                    UserLoc u = dbHandler.getFriendLoc(friends.get(i));
+                    UserLoc u = DBHandler.getFriendLoc(friends.get(i));
                     Message msgObj = handler.obtainMessage();
                     Bundle b = new Bundle();
                     b.putInt("first", 0);
@@ -200,7 +152,7 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
                 {
                     for(int i=0; i<friends.size(); i++)
                     {
-                        UserLoc u = dbHandler.getFriendLoc(friends.get(i));
+                        UserLoc u = DBHandler.getFriendLoc(friends.get(i));
                         Message msgObj = handler.obtainMessage();
                         Bundle b = new Bundle();
                         b.putInt("first", 1);
@@ -325,9 +277,7 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        vals[0] = event.values[0];
-        vals[1] = event.values[1];
-        vals[2] = event.values[2];
+
     }
 
     @Override
@@ -350,30 +300,6 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
         protected Void doInBackground(UserLoc... f) {
             DBHandler.updateLatLong(f[0]);
             return null;
-        }
-    }
-
-    private class GetUser extends
-            AsyncTask<Void, Void, User> {
-        //private ProgressDialog dialog;
-
-        public GetUser() {
-            //dialog = new ProgressDialog(FriendListActivity.class.getC);
-        }
-
-        protected void onPreExecute() {
-            //this.dialog.setMessage("Progress start");
-            //this.dialog.show();
-        }
-
-        protected User doInBackground(Void... f) {
-            return DBHandler.getUser(friendid);
-        }
-
-        @Override
-        protected void onPostExecute(User aVoid) {
-            super.onPostExecute(aVoid);
-            //dialog.dismiss();
         }
     }
 }

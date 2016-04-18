@@ -8,40 +8,28 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBMapper;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBScanExpression;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.PaginatedScanList;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
-import com.firebase.client.Firebase;
+import com.clay.hotncold.group.Group;
+import com.facebook.AccessToken;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class DBHandler {
 
-    Firebase ref;
-    String friendIDsOfMe;
-    String usersObject;
-    String locationObjects;
-
-    public DBHandler() {
-        /*ref = new Firebase("https://hotncold2.firebaseio.com/");
-        friendIDsOfMe=getFriendsDB(AccessToken.getCurrentAccessToken().getUserId());
-        usersObject=getUsersDB();
-        locationObjects=getLocationsDB();*/
-    }
-
-    /*public void setFriendIDsOfMe(String s)
+    private static void insertGroup(Group g)
     {
-        friendIDsOfMe = s;
-    }*/
+        AmazonDynamoDBClient ddb = LoginActivity.clientManager
+                .ddb();
+        DynamoDBMapper mapper = new DynamoDBMapper(ddb);
+
+        try {
+            mapper.save(g);
+        } catch (AmazonServiceException ex) {
+            Log.e("kaan", "Error inserting users");
+            LoginActivity.clientManager
+                    .wipeCredentialsOnAuthError(ex);
+        }
+    }
 
     public static void insertLatLong(UserLoc u)
     {
@@ -86,6 +74,45 @@ public class DBHandler {
         }
     }
 
+    private static void updateUserFriendAsync(ArrayList<String> del)
+    {
+        Log.d("elif", "gorki");
+        String id=AccessToken.getCurrentAccessToken().getUserId();
+        Log.d("elif", "elif");
+        ArrayList<String> myFriends = getFriendIds(id);
+        Log.d("elif", "gorki");
+        for(int i =0; i<del.size(); i++)
+        {
+            String parts[]=del.get(i).split("-");
+            myFriends.remove(parts[1]);
+        }
+
+        String friends = "";
+
+        for(int i=0; i<myFriends.size(); i++)
+        {
+            friends+=myFriends.get(i) + "-";
+
+            Log.d("elif", myFriends.get(i));
+        }
+
+        AmazonDynamoDBClient ddb = LoginActivity.clientManager
+                .ddb();
+        DynamoDBMapper mapper = new DynamoDBMapper(ddb);
+
+        Friendship myFriendship = mapper.load(Friendship.class, id);
+        myFriendship.setMyFriends(friends);
+        mapper.save(myFriendship);
+    }
+
+
+    public static void updateUserFriend(ArrayList<String> del)
+    {
+        Log.d("elif", "kaaan");
+        new UpdateUserFriends().execute(del);
+        Log.d("elif", "kaaan");
+    }
+
     public static void updateLatLong(UserLoc u)
     {
         AmazonDynamoDBClient ddb = LoginActivity.clientManager
@@ -100,111 +127,29 @@ public class DBHandler {
                     .wipeCredentialsOnAuthError(ex);
         }
     }
-
-    /*public String getFriendsDB(String me)
+    private static Group getGroupAsync(String name)
     {
-        DBHandler.HttpAsyncTask x =new DBHandler.HttpAsyncTask();
-        x.execute("https://hotncold2.firebaseio.com/users/"+me+"/friends.json");
-        String s = null;
-        try {
-            s = x.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return s;
-    }*/
+        AmazonDynamoDBClient ddb = LoginActivity.clientManager
+                .ddb();
+        DynamoDBMapper mapper = new DynamoDBMapper(ddb);
+        Group u = mapper.load(Group.class, name + "-" + AccessToken.getCurrentAccessToken().getUserId());
 
-    /*public String getUsersDB()
-    {
-        DBHandler.HttpAsyncTask x =new DBHandler.HttpAsyncTask();
-        x.execute("https://hotncold2.firebaseio.com/users.json");
-        String s = null;
-        try {
-            s = x.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return s;
-    }*/
-
-    /*public String getLocationsDB()
-    {
-        DBHandler.HttpAsyncTask x =new DBHandler.HttpAsyncTask();
-        x.execute("https://hotncold2.firebaseio.com/location.json");
-        String s = null;
-        try {
-            s = x.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return s;
-    }*/
-
-   /* public void addUserToDb(User user,String s)
-    {
-        Firebase alanRef = ref.child("users").child(s);
-        alanRef.setValue(user);
-    }*/
-
-    /*public void updateLatLong(String s, Location l)
-    {
-        if(l!=null) {
-            Firebase alanRef = ref.child("location").child(s);
-            UserLoc loc = new UserLoc(l.getLatitude(), l.getLongitude(), l.getSpeed(), l.getTime());
-            alanRef.setValue(loc);
-        }
-        else{
-            Firebase alanRef = ref.child("location").child(s);
-            UserLoc loc = new UserLoc(0,0,0,0);
-            alanRef.setValue(loc);
-        }
+        return u;
     }
 
-    public void addFriendToDB(String me, String friend)
-    {
-        Firebase alanRef = ref.child("users").child(me).child("friends");
-        alanRef.push().setValue(friend);
-    }
-
-    public boolean isUserNull(String me)
-    {
-        DBHandler.HttpAsyncTask x =new DBHandler.HttpAsyncTask();
-        x.execute("https://hotncold2.firebaseio.com/users/" + me + ".json");
-        String s = null;
+    public static Group getGroup(String name) {
+        DBHandler.GetGroup x = new DBHandler.GetGroup();
+        x.execute(name);
+        Group us = null;
         try {
-            s = x.get();
+            us = x.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-
-        if(s==null || s.equals("null"))
-            return true;
-        else
-            return false;
+        return us;
     }
 
-    public boolean isFriendsNull(String me)
-    {
-        DBHandler.HttpAsyncTask x =new DBHandler.HttpAsyncTask();
-        x.execute("https://hotncold2.firebaseio.com/users/" + me + "/friends.json");
-        String s = null;
-        try {
-            s = x.get();
-        } catch (InterruptedException | ExecutionException e) {
-            Log.d("kaan", e.toString());
-        }
-        finally {
-
-            if(s==null || s.equals("null")) {
-                Log.d("kaan","if"+ s);
-                return true;
-            }
-            else
-                return false;
-        }
-    }*/
-
-    public static UserLoc getFriendLoc(String id)
+    private static UserLoc getFriendLocAsync(String id)
     {
         AmazonDynamoDBClient ddb = LoginActivity.clientManager
                 .ddb();
@@ -212,174 +157,60 @@ public class DBHandler {
         UserLoc u = mapper.load(UserLoc.class, id);
 
         return u;
-
-
-        /*JSONObject json = null;
-
-        try {
-            json = new JSONObject(locationObjects);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            json = json.getJSONObject(id);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        UserLoc u;
-
-        u=new UserLoc(Double.parseDouble(json.optString("lat")),
-                Double.parseDouble(json.optString("lon")),
-                Float.parseFloat(json.optString("speed")),
-                Long.parseLong(json.optString("time")));
-
-        return u;*/
-
-        /*DBHandler.HttpAsyncTask x =new DBHandler.HttpAsyncTask();
-        x.execute("https://hotncold2.firebaseio.com/location/" + id + ".json");
-        String s = null;
-        try {
-            s = x.get();
-        } catch (InterruptedException | ExecutionException e) {
-            Log.d("kaan", e.toString());
-        }
-
-        Log.d("kaan", s);
-        UserLoc u=null;
-
-        JSONObject json;
-
-        try {
-            json = new JSONObject(s);
-
-            u=new UserLoc(Double.parseDouble(json.optString("lat")),
-                    Double.parseDouble(json.optString("lon")),
-                    Float.parseFloat(json.optString("speed")),
-                    Long.parseLong(json.optString("time")));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return u;*/
     }
 
-
-
-    public static ArrayList<String> getFriendIds(String me)
+    public static UserLoc getFriendLoc(String id)
     {
+        DBHandler.GetUserLoc x = new DBHandler.GetUserLoc();
+        x.execute(id);
+        UserLoc us = null;
+        try {
+            us = x.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return us;
+    }
 
+    private static ArrayList<String> getFriendIdsAsync(String me)
+    {
         AmazonDynamoDBClient ddb = LoginActivity.clientManager
                 .ddb();
         DynamoDBMapper mapper = new DynamoDBMapper(ddb);
         Friendship u = mapper.load(Friendship.class, me);
 
+        if(u==null)
+            return null;
+
         String string = u.getMyFriends();
         String[] parts = string.split("-");
+
 
         ArrayList<String> friendIds=new ArrayList<>();
         for(int i=0; i<parts.length; i++)
             friendIds.add(parts[i]);
 
         return friendIds;
+    }
 
 
-        /*JSONObject json = null;
-        JSONArray arr=null;
-
-        try {
-            json = new JSONObject(friendIDsOfMe);
-            arr = json.names();
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
+    public static ArrayList<String> getFriendIds(String me)
+    {
         ArrayList<String> friends = new ArrayList<>();
 
-        for(int i=0; i<arr.length(); i++)
-        {
-            try {
-                assert json != null;
-                friends.add(json.getString(arr.get(i).toString()));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return friends;*/
-
-        /*int i=0;
-        while(!json.isNull("friend"+i))
-        {
-            try {
-                friends.add(json.getString("friend"+i));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            i++;
-        }
-
-        return friends;*/
-
-        /*DBHandler.HttpAsyncTask x =new DBHandler.HttpAsyncTask();
-        x.execute("https://hotncold2.firebaseio.com/users/"+me+"/friends.json");
-        String s = null;
+        DBHandler.GetFriendIds a = new DBHandler.GetFriendIds();
+        a.execute(me);
         try {
-            s = x.get();
+            friends = a.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
-        JSONObject json;
-        ArrayList<String> list=null;
-
-        try {
-            json = new JSONObject(s);
-
-            list = new ArrayList<>();
-            for(int i = 0 ; i < json.length() ; i++) {
-                list.add(json.getString("friend" + i));
-                //Log.d("kaan", list.get(i));
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return list;*/
+        return friends;
     }
 
     public ArrayList<User> getFriends(String me)
     {
-        /*DBHandler.HttpAsyncTask x =new DBHandler.HttpAsyncTask();
-        x.execute("https://hotncold2.firebaseio.com/users/" + me + "/friends.json");
-        String s = null;
-        try {
-            s = x.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        JSONObject json;
-        ArrayList<String> list=null;
-
-        try {
-            json = new JSONObject(s);
-
-            list = new ArrayList<>();
-            for(int i = 0 ; i < json.length() ; i++) {
-                list.add(json.getString("friend" + i));
-                //Log.d("kaan", list.get(i));
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }*/
-
-        Log.d("kaan", "10");
-
         ArrayList<String> f = getFriendIds(me);
         Log.d("kaan", "11");
 
@@ -390,47 +221,9 @@ public class DBHandler {
         Log.d("kaan", "13");
 
         return friends;
-        /*ArrayList<User> u=null;
-        try {
-           u  = s.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        return u;*/
-
-        //Log.d("kaan", s);
     }
 
-    public ArrayList<String> getFriendsNames(String id)
-    {
-        JSONObject json = null;
-        JSONArray arr=null;
-
-        try {
-            json = new JSONObject(friendIDsOfMe);
-            arr = json.names();
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ArrayList<String> friends = new ArrayList<>();
-
-        for(int i=0; i<arr.length(); i++)
-        {
-            try {
-                assert json != null;
-                friends.add(json.getString(arr.get(i).toString()));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return friends;
-    }
-
-    public static User getUser(String id)
+    private static User getUserAsync(String id)
     {
         AmazonDynamoDBClient ddb = LoginActivity.clientManager
                 .ddb();
@@ -440,37 +233,65 @@ public class DBHandler {
         Log.d("ckaan", u.toString());
 
         return u;
-        /*String s = usersObject;
-
-        User u = new User();
-
-        JSONObject json1 = null;
-
-        try {
-            json1 = new JSONObject(s);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            JSONObject json = json1.getJSONObject(id);
-            u.setUsername(json.optString("username"));
-            u.setSurname(json.optString("surname"));
-            //u.setBirthday(json.optString("birthday"));
-            //u.setEmail(json.optString("email"));
-            u.setFacebookID(json.optString("facebookID"));
-            //u.setGender(json.optString("gender"));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        Log.d("kaan", "bitti");
-        return u;*/
     }
 
-    public static ArrayList<User> getAllUsers()
+    public static User getUser(String id)
     {
+        User us;
+        DBHandler.GetUser x = new DBHandler.GetUser();
+        x.execute(id);
+        us = null;
+        try {
+            us = x.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return us;
+    }
 
+    private static ArrayList<Group> getMyGroupsAsync()
+    {
+        AmazonDynamoDBClient ddb = LoginActivity.clientManager
+                .ddb();
+        DynamoDBMapper mapper = new DynamoDBMapper(ddb);
+
+        DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+        try {
+            PaginatedScanList<Group> result = mapper.scan(
+                    Group.class, scanExpression);
+
+            ArrayList<Group> resultList = new ArrayList<>();
+            for (Group up : result) {
+                String[] parts = up.getGroupName().split("-");
+                if(parts[1].equals(AccessToken.getCurrentAccessToken().getUserId()))
+                    resultList.add(up);
+            }
+            return resultList;
+
+        } catch (AmazonServiceException ex) {
+            LoginActivity.clientManager
+                    .wipeCredentialsOnAuthError(ex);
+        }
+
+        return null;
+    }
+
+    public static ArrayList<Group> getMyGroups()
+    {
+        ArrayList<Group> groups = new ArrayList<>();
+        DBHandler.GetGroups x = new DBHandler.GetGroups();
+        x.execute();
+        groups = null;
+        try {
+            groups = x.get();
+        } catch (InterruptedException | ExecutionException e) {
+            Log.d("kaan", e.toString());
+        }
+        return groups;
+    }
+
+    private static ArrayList<User> getAllUsersAsync()
+    {
         AmazonDynamoDBClient ddb = LoginActivity.clientManager
                 .ddb();
         DynamoDBMapper mapper = new DynamoDBMapper(ddb);
@@ -492,33 +313,20 @@ public class DBHandler {
         }
 
         return null;
+    }
 
-        /*ArrayList<String> userIds = getAllUserIDs();
-        ArrayList<User> users=new ArrayList<>();
-
-        for(String s : userIds)
-            users.add(getUser(s));
-
-        return users;*/
-        /*Firebase re;
-
-        re = new Firebase("https://hotncold2.firebaseio.com/users");
-        Log.d("kaan", "getAllUsers");
-
-        re.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                for (DataSnapshot postSnapshot: snapshot.getChildren()) {
-                    User u = postSnapshot.getValue(User.class);
-                    Log.d("kaan", u.getUsername() + " - " + u.getSurname());
-                }
-            }
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-            }
-        });
-
-        return null;*/
+    public static ArrayList<User> getAllUsers()
+    {
+        ArrayList<User> userObjects;
+        DBHandler.GetUsers x = new DBHandler.GetUsers();
+        x.execute();
+        userObjects = null;
+        try {
+            userObjects = x.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return userObjects;
     }
 
     public ArrayList<String> getAllUserIDs(){
@@ -544,190 +352,174 @@ public class DBHandler {
         }
 
         return null;
-
-
-
-        /*String s= usersObject;
-
-        JSONObject json;
-        JSONArray arr=null;
-
-        try {
-            json = new JSONObject(s);
-            arr = json.names();
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ArrayList<String> users=new ArrayList<>();
-
-        try {
-            for(int i=0; i<arr.length(); i++) {
-                users.add(arr.get(i).toString());
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return users;*/
-
-        /*DBHandler.HttpAsyncTask x =new DBHandler.HttpAsyncTask();
-        x.execute("https://hotncold2.firebaseio.com/users.json");
-
-        String s = null;
-        try {
-            s = x.get();
-
-        } catch (InterruptedException | ExecutionException e) {
-            Log.d("kaan", e.toString());
-        }
-
-        JSONObject json;
-        JSONArray arr=null;
-
-        try {
-            json = new JSONObject(s);
-            arr = json.names();
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ArrayList<String> users=new ArrayList<>();
-
-        try {
-            for(int i=0; i<arr.length(); i++) {
-                users.add(arr.get(i).toString());
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return users;*/
     }
 
-    public static String GET(String url){
-        InputStream inputStream = null;
-        String result = "";
-        try {
-
-            // create HttpClient
-            HttpClient httpclient = new DefaultHttpClient();
-
-            // make GET request to the given URL
-            HttpResponse httpResponse = httpclient.execute(new HttpGet(url));
-
-            // receive response as inputStream
-            inputStream = httpResponse.getEntity().getContent();
-
-            // convert inputstream to string
-            if(inputStream != null)
-                result = convertInputStreamToString(inputStream);
-            else
-                result = "Did not work!";
-
-        } catch (Exception e) {
-            Log.d("kaan", e.toString());
-        }
-
-        return result;
-    }
-
-    private static String convertInputStreamToString(InputStream inputStream) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
-        String line = "";
-        String result = "";
-        while((line = bufferedReader.readLine()) != null)
-            result += line;
-
-        inputStream.close();
-        return result;
-
-    }
-
-    /*public boolean isConnected() {
-        ConnectivityManager connMgr = (ConnectivityManager) mContext.getSystemService(Activity.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected())
-            return true;
-        else
-            return false;
-    }*/
-
-    public static class HttpAsyncTask extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... urls) {
-
-            return GET(urls[0]);
-        }
-
-        // onPostExecute displays the results of the AsyncTask.
-        @Override
-        protected void onPostExecute(String result) {
-            //Log.d("kaan", result);
-        }
-
-    }
-
-    /*public class GetFriends extends AsyncTask<String, Void, ArrayList<User>>{
-        @Override
-        protected ArrayList<User> doInBackground(String... params) {
-            Log.d("kaan", "10");
-
-            ArrayList<String> f = getFriendIds(params[0]);
-            Log.d("kaan", "11");
-
-            ArrayList<User> friends = new ArrayList<>();
-            Log.d("kaan", "12");
-            for(int i=0; i<f.size();i++)
-                friends.add(getUser(f.get(i)));
-            Log.d("kaan", "13");
-
-            return friends;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<User> st) {
-            super.onPostExecute(st);
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
-    }*/
-
-    /*public ArrayList<String> getFriends(final String me)
+    public static void groupInsert(Group g)
     {
-        Firebase alanRef = ref.child("users");
+        new DBHandler.GroupAdd().execute(g);
+    }
 
-        alanRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                ArrayList<String> friends;
-                for (DataSnapshot userSnapshot: snapshot.getChildren()) {
-                    User post = userSnapshot.getValue(User.class);
-                    if(post.getUserID().equals(me)) {
-                        friends = post.getFriends();
-                    }
-                }
-            }
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-                System.out.println("The read failed: " + firebaseError.getMessage());
-            }
-        });
+    public static void userInsert(User u)
+    {
+        new DBHandler.UserAdd().execute(u);
+    }
 
-        return friends;
-    }*/
+    public static void friendshipInsert(Friendship f) {
+        new DBHandler.FriendshipAdd().execute(f);
+    }
+
     public void createGroup(ArrayList<String> users, String id, String groupName)
     {
 
     }
+
+    private static class GetGroup extends
+            AsyncTask<String, Void, Group> {
+
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected Group doInBackground(String... params) {
+            return DBHandler.getGroupAsync(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(Group aVoid) {
+            super.onPostExecute(aVoid);
+        }
+    }
+
+    private static class GetUser extends
+            AsyncTask<String, Void, User> {
+
+        public GetUser() {
+        }
+
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected User doInBackground(String... params) {
+            return DBHandler.getUserAsync(params[0]);
+        }
+
+        @Override
+        protected void onPostExecute(User aVoid) {
+            super.onPostExecute(aVoid);
+        }
+    }
+
+    private static class GetFriendIds extends
+            AsyncTask<String, Void, ArrayList<String>> {
+
+        protected void onPreExecute() {
+        }
+
+        protected ArrayList<String> doInBackground(String... f) {
+            return DBHandler.getFriendIdsAsync(f[0]);
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> aVoid) {
+            super.onPostExecute(aVoid);
+        }
+    }
+
+    private static class GetGroups extends
+            AsyncTask<Void, Void, ArrayList<Group>> {
+
+        protected void onPreExecute() {
+        }
+
+        protected ArrayList<Group> doInBackground(Void... f) {
+            return DBHandler.getMyGroupsAsync();
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Group> aVoid) {
+            super.onPostExecute(aVoid);
+        }
+    }
+
+    private static class GetUsers extends
+            AsyncTask<Void, Void, ArrayList<User>> {
+
+        public GetUsers() {
+        }
+
+        protected void onPreExecute() {
+        }
+
+        protected ArrayList<User> doInBackground(Void... f) {
+            return DBHandler.getAllUsersAsync();
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<User> aVoid) {
+            super.onPostExecute(aVoid);
+        }
+    }
+
+    private static class GetUserLoc extends
+            AsyncTask<String, Void, UserLoc> {
+
+        public GetUserLoc() {
+        }
+
+        protected void onPreExecute() {
+        }
+
+        protected UserLoc doInBackground(String... f) {
+            return DBHandler.getFriendLocAsync(f[0]);
+        }
+
+        @Override
+        protected void onPostExecute(UserLoc aVoid) {
+            super.onPostExecute(aVoid);
+            //dialog.dismiss();
+        }
+    }
+
+    private static class GroupAdd extends
+            AsyncTask<Group, Void, Void> {
+
+        protected Void doInBackground(Group... u) {
+            DBHandler.insertGroup(u[0]);
+            return null;
+        }
+    }
+
+    private static class UserAdd extends
+            AsyncTask<User, Void, Void> {
+
+        protected Void doInBackground(User... u) {
+            DBHandler.insertUser(u[0]);
+            return null;
+        }
+    }
+
+    private static class FriendshipAdd extends
+            AsyncTask<Friendship, Void, Void> {
+
+        protected Void doInBackground(Friendship... f) {
+            DBHandler.insertFriendship(f[0]);
+            return null;
+        }
+    }
+
+    private static class UpdateUserFriends extends
+            AsyncTask<ArrayList<String>, Void, Void> {
+
+        protected Void doInBackground(ArrayList<String>... u) {
+            Log.d("elif", "kdog");
+            DBHandler.updateUserFriendAsync(u[0]);
+            Log.d("elif", "mira");
+            return null;
+        }
+    }
+
+
 }
 
 

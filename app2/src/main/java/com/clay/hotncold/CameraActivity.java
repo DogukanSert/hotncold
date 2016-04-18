@@ -2,7 +2,6 @@ package com.clay.hotncold;
 
 import android.graphics.Color;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -28,7 +27,6 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -62,14 +60,7 @@ public class CameraActivity extends AugmentedReality {
 
 
         id = AccessToken.getCurrentAccessToken().getUserId();
-        friends = null;
-        CameraActivity.GetFriendIds a = new CameraActivity.GetFriendIds();
-        a.execute(id);
-        try {
-            friends = a.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+        friends = DBHandler.getFriendIds(id);
 
         // Create toast
         myToast = new Toast(getApplicationContext());
@@ -206,27 +197,5 @@ public class CameraActivity extends AugmentedReality {
         return true;
     }*/
 
-    private class GetFriendIds extends
-            AsyncTask<String, Void, ArrayList<String>> {
-        //private ProgressDialog dialog;
 
-        public GetFriendIds() {
-            //dialog = new ProgressDialog(FriendListActivity.class.getC);
-        }
-
-        protected void onPreExecute() {
-            //this.dialog.setMessage("Progress start");
-            //this.dialog.show();
-        }
-
-        protected ArrayList<String> doInBackground(String... f) {
-            return DBHandler.getFriendIds(f[0]);
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<String> aVoid) {
-            super.onPostExecute(aVoid);
-            //dialog.dismiss();
-        }
-    }
 }
