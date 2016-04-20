@@ -301,7 +301,7 @@ public class FriendListActivity extends AppCompatActivity {
     public void onBackPressed() {
         Log.d("elif", "sa");
         ArrayList<String> deleted = getDeletedFriends();
-        DBHandler.updateUserFriend(deleted);
+        DBHandler.deleteFriends(deleted);
         Log.d("elif", "as1");
         Intent i = new Intent(this, ProfileFragment.class);
         startActivity(i);

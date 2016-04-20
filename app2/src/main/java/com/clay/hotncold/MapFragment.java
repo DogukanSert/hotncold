@@ -51,6 +51,15 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
 
     static String id;
     static String friendid;
+    public static boolean isFirst;
+
+    public static boolean isFirst() {
+        return isFirst;
+    }
+
+    public static void setIsFirst(boolean isFirst) {
+        MapFragment.isFirst = isFirst;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -139,7 +148,7 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
                     UserLoc u = DBHandler.getFriendLoc(friends.get(i));
                     Message msgObj = handler.obtainMessage();
                     Bundle b = new Bundle();
-                    b.putInt("first", 0);
+                    MapFragment.setIsFirst(true);
                     b.putInt("i",i);
                     b.putString("id", friends.get(i));
                     b.putString("lat", u.getLat() + "");
@@ -155,7 +164,8 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
                         UserLoc u = DBHandler.getFriendLoc(friends.get(i));
                         Message msgObj = handler.obtainMessage();
                         Bundle b = new Bundle();
-                        b.putInt("first", 1);
+
+                        MapFragment.setIsFirst(false);
                         b.putInt("i",i);
                         b.putString("id", friends.get(i));
                         b.putString("lat", u.getLat() + "");
@@ -171,11 +181,10 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
                 @Override
                 public void handleMessage(Message msg) {
                     Bundle b = msg.getData();
-                    int first = b.getInt("first");
                     int i = b.getInt("i");
                     String lat = b.getString("lat");
                     String lon = b.getString("lon");
-                    if(first==0) {
+                    if(MapFragment.isFirst()) {
                         //if (Double.parseDouble(lat) != 0 || Double.parseDouble(lon) != 0) {
                         LatLng PERTH = new LatLng(Double.parseDouble(lat), Double.parseDouble(lon));
                         markers[i] = map.addMarker(new MarkerOptions()
@@ -186,9 +195,10 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
                         //}
                     }
 
-                    else if (first==1)
+                    else
                     {
-                        markers[i].setPosition(new LatLng(Double.parseDouble(lat), Double.parseDouble(lon)));
+                        if(markers[i]!=null)
+                            markers[i].setPosition(new LatLng(Double.parseDouble(lat), Double.parseDouble(lon)));
                     }
 
                 }
@@ -201,6 +211,7 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
 
     @Override
     public void onResume() {
+        setIsFirst(true);
         mapView.onResume();
         super.onResume();
     }
@@ -250,6 +261,7 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
         u.setLon(location.getLongitude());
         u.setSpeed(location.getSpeed());
         u.setTime(location.getTime());
+        u.setAlt(location.getAltitude());
         new UpdateLoc().execute(u);
     }
 
@@ -271,6 +283,7 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
         u.setLon(0);
         u.setSpeed(0);
         u.setTime(0);
+        u.setAlt(0);
 
         new UpdateLoc().execute(u);
     }
@@ -294,7 +307,7 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
         }
     }
 
-    private class UpdateLoc extends
+    public class UpdateLoc extends
             AsyncTask<UserLoc, Void, Void> {
 
         protected Void doInBackground(UserLoc... f) {

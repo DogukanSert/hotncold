@@ -11,7 +11,7 @@ import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBTable;
 @DynamoDBTable(tableName = "location")
 public class UserLoc{
     public String id;
-    public double lat, lon;
+    public double lat, lon, alt;
     public float speed;
     public long time;
 
@@ -34,6 +34,16 @@ public class UserLoc{
 
     public void setLat(double lat) {
         this.lat = lat;
+    }
+
+
+    @DynamoDBAttribute(attributeName = "alt")
+    public double getAlt() {
+        return alt;
+    }
+
+    public void setAlt(double alt) {
+        this.alt = alt;
     }
 
     @DynamoDBAttribute(attributeName = "lon")

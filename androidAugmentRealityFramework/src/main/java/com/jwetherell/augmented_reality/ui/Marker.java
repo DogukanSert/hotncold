@@ -318,9 +318,7 @@ public class Marker implements Comparable<Marker> {
                                  location.getLongitude(), 
                                  distanceArray);
         distance = distanceArray[0];
-        Location myLoc = ARData.getCurrentLocation();
-        distance = distFrom((float)physicalLocation.getLatitude(),
-                (float)physicalLocation.getLongitude(),(float)location.getLatitude(), (float)location.getLongitude());
+
 
         Log.d("kaan", "distance " + distance + " ");
     }

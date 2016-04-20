@@ -16,7 +16,6 @@ import com.jwetherell.augmented_reality.data.ARData;
 import com.jwetherell.augmented_reality.data.GooglePlacesDataSource;
 import com.jwetherell.augmented_reality.data.LocalDataSource;
 import com.jwetherell.augmented_reality.data.NetworkDataSource;
-import com.jwetherell.augmented_reality.data.WikipediaDataSource;
 import com.jwetherell.augmented_reality.ui.Marker;
 import com.jwetherell.augmented_reality.widget.VerticalTextView;
 
@@ -72,8 +71,6 @@ public class Demo extends AugmentedReality {
         LocalDataSource localData = new LocalDataSource(this.getResources());
         ARData.addMarkers(localData.getMarkers());
 
-        NetworkDataSource wikipedia = new WikipediaDataSource(this.getResources());
-        sources.put("wiki", wikipedia);
         NetworkDataSource googlePlaces = new GooglePlacesDataSource(this.getResources());
         sources.put("googlePlaces", googlePlaces);
     }

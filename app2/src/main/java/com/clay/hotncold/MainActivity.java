@@ -109,10 +109,6 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
         request.setParameters(parameters);
         request.executeAsync();
 
-
-
-
-
         Toast.makeText(getApplicationContext(),"Profile",Toast.LENGTH_SHORT).show();
         MapFragment fragment = new MapFragment();
         //FilterFragment fragment = new FilterFragment();

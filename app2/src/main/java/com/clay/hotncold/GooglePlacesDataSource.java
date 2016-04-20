@@ -7,7 +7,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.util.Log;
 
-import com.jwetherell.augmented_reality.R;
+import com.facebook.AccessToken;
 import com.jwetherell.augmented_reality.data.ARData;
 import com.jwetherell.augmented_reality.data.NetworkDataSource;
 import com.jwetherell.augmented_reality.ui.IconMarker;
@@ -15,6 +15,8 @@ import com.jwetherell.augmented_reality.ui.Marker;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,79 +27,166 @@ import java.util.List;
  */
 public class GooglePlacesDataSource extends NetworkDataSource {
 
-	private static final String URL = "https://maps.googleapis.com/maps/api/place/search/json?";
-	private static final String TYPES = "airport|amusement_park|aquarium|art_gallery|bus_station|campground|car_rental|city_hall|embassy|establishment|hindu_temple|local_governemnt_office|mosque|museum|night_club|park|place_of_worship|police|post_office|stadium|spa|subway_station|synagogue|taxi_stand|train_station|travel_agency|University|zoo";
-
-	private static String key = null;
 	private static Bitmap icon = null;
+
+	ArrayList<String> friends;
+	ArrayList<UserLoc> locs;
+    ArrayList<User> users;
+	String id;
+    public static final int MAX = 5;
+    public static int count;
+    String parts[];
 
 	public GooglePlacesDataSource(Resources res) {
 		if (res == null) throw new NullPointerException();
 
-		key = res.getString(R.string.google_places_api_key);
+        count=0;
 
-		createIcon(res);
+		id = AccessToken.getCurrentAccessToken().getUserId();
+		friends = DBHandler.getFriendIds(id);
+
+        locs = new ArrayList<>();
+        users = new ArrayList<>();
+
+		//createIcon(res);
 	}
 
-	protected void createIcon(Resources res) {
+	/*protected void createIcon(Resources res) {
 		if (res == null) throw new NullPointerException();
 
 		icon = BitmapFactory.decodeResource(res, R.drawable.buzz);
-	}
+	}*/
 
 	@Override
 	public String createRequestURL(double lat, double lon, double alt, float radius, String locale) {
-		try {
+		/*try {
 			return URL + "location="+lat+","+lon+"&radius="+(radius*1000.0f)+"&types="+TYPES+"&sensor=true&key="+key;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
-		}
+		}*/
+        return null;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-
-
     /**
-     * Type 0 -----> a friend with id
-     * Type 1 -----> a group with id
-     * Type 2 -----> all friends
      *
-     */
+     * Type 0 -> single user with id
+     * Type 1 -> group members with groupname id
+     * Type 2 -> all friends of user with id
+     *
+     * */
+
+
 
     @Override
-    public List<Marker> getMarkerList(int type, String id, float radius, ArrayList<String> friends)
+    public List<Marker> getMarkerList(int type, String id, float radius)
     {
+        if(count>MAX || count==0){
+            if(type==2){
+                Log.d("camerakaan", type +"");
+                for(String s : friends) {
+                    locs.add(DBHandler.getFriendLoc(s));
+                    users.add(DBHandler.getUser(s));
+                }
+            }
+            else if(type == 1){
+                String s = DBHandler.getGroup(id).getMyFriends();
+                parts = s.split("-");
+                for(int i=0; i<parts.length; i++) {
+                    locs.add(DBHandler.getFriendLoc(parts[i]));
+                    users.add(DBHandler.getUser(parts[i]));
+                }
+            }
+            else if(type == 0){
+                locs.add(DBHandler.getFriendLoc(id));
+                users.add(DBHandler.getUser(id));
+            }
+            count=0;
+        }
         List<Marker> markers = new ArrayList<>();
         Location last = ARData.getCurrentLocation();
         float myLat = (float) last.getLatitude();
         float myLon = (float) last.getLongitude();
 
-        if(type == 0)
-            ;
-        else if(type == 1)
-            ;
+        if(type == 0) {
+            UserLoc us = locs.get(0);
+            User u = users.get(0);
+            if(distFrom(myLat, myLon, (float)us.getLat(), (float)us.getLon()) < radius*1000) {
+                icon = getFacebookPPBitmap(getProfilePicture(us.getId()));
+                markers.add(new IconMarker(u.getUsername() + " " + u.getSurname(),
+                        us.getLat(), us.getLon(), 0, Color.RED, icon, u.getFacebookID()));
+                Log.d("camerakaan", us.getId());
+            }
+        }
+        else if(type == 1) {
+            for (int i = 0; i < parts.length; i++) {
+
+                UserLoc us = locs.get(i);
+                User u = users.get(i);
+                if(distFrom(myLat, myLon, (float)us.getLat(), (float)us.getLon()) < radius*1000) {
+                    icon = getFacebookPPBitmap(getProfilePicture(us.getId()));
+                    markers.add(new IconMarker(u.getUsername() + " " + u.getSurname(),
+                            us.getLat(), us.getLon(), 0, Color.RED, icon, u.getFacebookID()));
+                    Log.d("camerakaan", us.getId());
+                }
+            }
+        }
         else if(type == 2) {
 
             for(int i =0; i<friends.size(); i++)
             {
-                Log.d("kaan" , i + "th getting friend");
-                UserLoc us= DBHandler.getFriendLoc(friends.get(i));
-
-                if(distFrom(myLat, myLon, (float)us.getLat(), (float)us.getLon()) < radius) {
-                    markers.add(new IconMarker(us.getId(), us.getLat(), us.getLon(), 0, Color.RED, icon));
-                    Log.d("kaan", us.getId());
+                Log.d("camerakaan", i + "th getting friend" + radius);
+                UserLoc us = locs.get(i);
+                User u = users.get(i);
+                if(distFrom(myLat, myLon, (float)us.getLat(), (float)us.getLon()) < radius*1000) {
+                    icon = getFacebookPPBitmap(getProfilePicture(us.getId()));
+                    markers.add(new IconMarker(u.getUsername() + " " + u.getSurname(),
+                            us.getLat(), us.getLon(), 0, Color.RED, icon, u.getFacebookID()));
+                    Log.d("camerakaan", us.getId());
                 }
             }
 
         }
+        count++;
         return markers;
     }
 
-	@Override
-	public List<Marker> parse(String URL) {
+	public static float distFrom(float lat1, float lng1, float lat2, float lng2) {
+        double earthRadius = 6371000; //meters
+        double dLat = Math.toRadians(lat2-lat1);
+        double dLng = Math.toRadians(lng2-lng1);
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLng/2) * Math.sin(dLng/2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        float dist = (float) (earthRadius * c);
+
+        return dist;
+    }
+
+    private static Bitmap getFacebookPPBitmap(String url){
+        URL facebookProfileURL= null;
+        Bitmap bitmap=null;
+        try {
+            facebookProfileURL = new URL(url);
+            bitmap = BitmapFactory.decodeStream(facebookProfileURL.openConnection().getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if(bitmap==null)
+            Log.d("camerakaan", "bitmap is null");
+
+        return bitmap;
+    }
+
+    private String getProfilePicture(String id)
+    {
+        return "https://graph.facebook.com/"+id+"/picture?type=square";
+    }
+
+    @Override
+    public List<Marker> parse(String URL) {
 		/*if (URL == null) throw new NullPointerException();
 
 		InputStream stream = null;
@@ -118,10 +207,11 @@ public class GooglePlacesDataSource extends NetworkDataSource {
 
 		return parse(json);*/
         return null;
-	}
+    }
 
-	@Override
-	public List<Marker> parse(JSONObject root) {
+    @Override
+    public List<Marker> parse(JSONObject root) {
+
 		/*if (root == null) throw new NullPointerException();
 
 		JSONObject jo = null;
@@ -142,49 +232,5 @@ public class GooglePlacesDataSource extends NetworkDataSource {
 		}
 		return markers;*/
         return null;
-	}
-
-	/*private Marker processJSONObject(JSONObject jo) {
-		if (jo == null) throw new NullPointerException();
-
-		if (!jo.has("geometry")) throw new NullPointerException();
-
-		Marker ma = null;
-		try {
-			Double lat = null, lon = null;
-
-			if (!jo.isNull("geometry")) {
-				JSONObject geo = jo.getJSONObject("geometry");
-				JSONObject coordinates = geo.getJSONObject("location");
-				lat = Double.parseDouble(coordinates.getString("lat"));
-				lon = Double.parseDouble(coordinates.getString("lng"));
-			}
-			if (lat != null) {
-				String user = jo.getString("name");
-
-				ma = new IconMarker(user + ": " + jo.getString("name"), lat, lon, 1, Color.RED, icon);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return ma;
-	}*/
-
-    public static float distFrom(float lat1, float lng1, float lat2, float lng2) {
-        double earthRadius = 6371000; //meters
-        double dLat = Math.toRadians(lat2-lat1);
-        double dLng = Math.toRadians(lng2-lng1);
-        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                        Math.sin(dLng/2) * Math.sin(dLng/2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        float dist = (float) (earthRadius * c);
-
-        return dist;
     }
-
-
-
-
-
 }

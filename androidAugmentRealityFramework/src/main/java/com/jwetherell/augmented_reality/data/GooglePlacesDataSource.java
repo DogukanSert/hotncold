@@ -1,21 +1,19 @@
 package com.jwetherell.augmented_reality.data;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
+import com.jwetherell.augmented_reality.R;
+import com.jwetherell.augmented_reality.ui.Marker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-
-import com.jwetherell.augmented_reality.R;
-import com.jwetherell.augmented_reality.ui.IconMarker;
-import com.jwetherell.augmented_reality.ui.Marker;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class extends DataSource to fetch data from Google Places.
@@ -122,7 +120,7 @@ public class GooglePlacesDataSource extends NetworkDataSource {
 			if (lat != null) {
 				String user = jo.getString("name");
 
-				ma = new IconMarker(user + ": " + jo.getString("name"), lat, lon, 0, Color.RED, icon);
+				//ma = new IconMarker(user + ": " + jo.getString("name"), lat, lon, 0, Color.RED, icon);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

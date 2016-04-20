@@ -52,7 +52,7 @@ public class BeaconFragment extends Fragment {
     private RecyclerView recyclerView;
     private SimpleStringRecyclerViewAdapter mAdapter;
     private AdvertiseCallback advertiseCallback;
-    private BluetoothLeAdvertiser adv;
+    private static BluetoothLeAdvertiser adv;
     public static String friendid;
 
 

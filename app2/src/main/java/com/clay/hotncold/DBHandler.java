@@ -74,42 +74,77 @@ public class DBHandler {
         }
     }
 
-    private static void updateUserFriendAsync(ArrayList<String> del)
+    private static void addMeToFriendsAsync(String his)
     {
-        Log.d("elif", "gorki");
-        String id=AccessToken.getCurrentAccessToken().getUserId();
-        Log.d("elif", "elif");
-        ArrayList<String> myFriends = getFriendIds(id);
-        Log.d("elif", "gorki");
-        for(int i =0; i<del.size(); i++)
-        {
-            String parts[]=del.get(i).split("-");
-            myFriends.remove(parts[1]);
-        }
-
-        String friends = "";
-
-        for(int i=0; i<myFriends.size(); i++)
-        {
-            friends+=myFriends.get(i) + "-";
-
-            Log.d("elif", myFriends.get(i));
-        }
-
         AmazonDynamoDBClient ddb = LoginActivity.clientManager
                 .ddb();
         DynamoDBMapper mapper = new DynamoDBMapper(ddb);
 
+        String id=AccessToken.getCurrentAccessToken().getUserId();
+        Friendship hisriendship = mapper.load(Friendship.class, his);
+
+        if(hisriendship == null)
+            Log.d("addFriend", his);
+
+        String hisFriends = hisriendship.getMyFriends();
+
+        hisFriends += id + "-";
+
+        hisriendship.setMyFriends(hisFriends);
+        mapper.save(hisriendship);
+    }
+
+    public static void addMeToFriends(String his)
+    {
+        Log.d("elif", "kaaan");
+        new AddMeToFriend().execute(his);
+        Log.d("elif", "kaaan");
+    }
+
+    private static void deleteFriendsAsync(ArrayList<String> del)
+    {
+        AmazonDynamoDBClient ddb = LoginActivity.clientManager
+                .ddb();
+        DynamoDBMapper mapper = new DynamoDBMapper(ddb);
+
+        String id=AccessToken.getCurrentAccessToken().getUserId();
         Friendship myFriendship = mapper.load(Friendship.class, id);
-        myFriendship.setMyFriends(friends);
+
+        Log.d("elif", "gorki");
+        String myFriends = myFriendship.getMyFriends();
+
+        String friends[]=myFriends.split("-");
+
+        ArrayList<String> newFriends = new ArrayList<>();
+
+        for(String s : friends)
+            newFriends.add(s);
+
+        if(del!=null) {
+            for (String s : del) {
+                String delId;
+                String part[]=s.split("-");
+                delId = part[1];
+                newFriends.remove(delId);
+            }
+        }
+
+        String newVersion = "";
+
+        for(int i=0; i<newFriends.size(); i++)
+        {
+            newVersion += newFriends.get(i) + "-";
+            Log.d("kaan", newFriends.get(i));
+        }
+        myFriendship.setMyFriends(newVersion);
         mapper.save(myFriendship);
     }
 
 
-    public static void updateUserFriend(ArrayList<String> del)
+    public static void deleteFriends(ArrayList<String> del)
     {
         Log.d("elif", "kaaan");
-        new UpdateUserFriends().execute(del);
+        new DeleteFriends().execute(del);
         Log.d("elif", "kaaan");
     }
 
@@ -205,7 +240,6 @@ public class DBHandler {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-
         return friends;
     }
 
@@ -230,6 +264,8 @@ public class DBHandler {
         DynamoDBMapper mapper = new DynamoDBMapper(ddb);
         User u = mapper.load(User.class, id);
 
+        if(u==null)
+            return null;
         Log.d("ckaan", u.toString());
 
         return u;
@@ -508,13 +544,23 @@ public class DBHandler {
         }
     }
 
-    private static class UpdateUserFriends extends
+    private static class DeleteFriends extends
             AsyncTask<ArrayList<String>, Void, Void> {
 
         protected Void doInBackground(ArrayList<String>... u) {
             Log.d("elif", "kdog");
-            DBHandler.updateUserFriendAsync(u[0]);
+            DBHandler.deleteFriendsAsync(u[0]);
             Log.d("elif", "mira");
+            return null;
+        }
+    }
+
+    private static class AddMeToFriend extends
+            AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... params) {
+            DBHandler.addMeToFriendsAsync(params[0]);
             return null;
         }
     }

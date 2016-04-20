@@ -1,7 +1,6 @@
 package com.clay.hotncold;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -29,6 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class LoginActivity extends AppCompatActivity {
@@ -39,6 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     public static AmazonClientManager clientManager = null;
 
     User user;
+    User newUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +49,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         clientManager = new AmazonClientManager(this);
+
+        newUser = new User();
 
         Button login_linkedin_btn = (Button) findViewById(R.id.LI_login_button);
         assert login_linkedin_btn != null;
@@ -106,8 +109,15 @@ public class LoginActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        newUser = DBHandler.getUser(id);
+
                         user = new User(object);
                         DBHandler.userInsert(user);
+
+                        if(newUser == null)
+                        {
+                            Log.d("kaan", "null");
+                        }
                     }
                 });
 
@@ -122,56 +132,36 @@ public class LoginActivity extends AppCompatActivity {
 
                 new GraphRequest(loginResult.getAccessToken(), "/me/friends", null, HttpMethod.GET, new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
-
-                        //if (dbHandler.isFriendsNull(loginResult.getAccessToken().getUserId())) {
-                            try {
-                                JSONArray friends = response.getJSONObject().getJSONArray("data");
-                                String s = "";
-                                for (int i = 0; i < friends.length(); i++) {
-                                    JSONObject rec = friends.getJSONObject(i);
-                                    s += rec.getString("id") + "-";
-                                }
-                                Friendship f = new Friendship();
-                                String id =loginResult.getAccessToken().getUserId();
-                                f.setMe(id);
-                                f.setMyFriends(s);
-
-                                if(DBHandler.getFriendIds(id)==null) {
-                                    Log.d("kaan", "null geldi ekledi ");
-                                    DBHandler.friendshipInsert(f);
-
-                                }
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+                        try {
+                            JSONArray friends = response.getJSONObject().getJSONArray("data");
+                            ArrayList<String> myFriends = new ArrayList<String>();
+                            String s = "";
+                            for (int i = 0; i < friends.length(); i++) {
+                                JSONObject rec = friends.getJSONObject(i);
+                                s += rec.getString("id") + "-";
+                                myFriends.add(rec.getString("id"));
                             }
-                            Log.d("elif", response.getJSONObject().toString());
-                        //}
+                            Friendship f = new Friendship();
+                            String id =loginResult.getAccessToken().getUserId();
+                            f.setMe(id);
+                            f.setMyFriends(s);
+
+                            if(DBHandler.getFriendIds(id)==null) {
+                                Log.d("kaan", "null geldi ekledi ");
+                                DBHandler.friendshipInsert(f);
+                                for(String user : myFriends)
+                                {
+                                    DBHandler.addMeToFriends(user);
+                                }
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Log.d("elif", response.getJSONObject().toString());
                     }
                 }
                 ).executeAsync();
-
-
-
-
-
-
-
-                /*GraphRequest r = new GraphRequest(AccessToken.getCurrentAccessToken(), "/me/friends",
-                        null,
-                        HttpMethod.GET,
-                        new GraphRequest.Callback() {
-                            public void onCompleted(GraphResponse response) {
-                                Log.d("kaan", response.toString());
-                            }
-                        }
-                );
-                Bundle b = new Bundle();
-                b.putString("fields",
-                        "id,name,email,gender, birthday, likes");
-                r.setParameters(b);
-                r.executeAsync();*/
-
             }
 
             @Override

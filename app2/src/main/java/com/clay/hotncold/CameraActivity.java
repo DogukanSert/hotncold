@@ -1,5 +1,6 @@
 package com.clay.hotncold;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
@@ -12,16 +13,14 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.facebook.AccessToken;
-import com.jwetherell.augmented_reality.R;
 import com.jwetherell.augmented_reality.activity.AugmentedReality;
 import com.jwetherell.augmented_reality.data.ARData;
 import com.jwetherell.augmented_reality.data.LocalDataSource;
 import com.jwetherell.augmented_reality.data.NetworkDataSource;
+import com.jwetherell.augmented_reality.ui.IconMarker;
 import com.jwetherell.augmented_reality.ui.Marker;
 import com.jwetherell.augmented_reality.widget.VerticalTextView;
 
-import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -45,22 +44,20 @@ public class CameraActivity extends AugmentedReality {
     private static final ThreadPoolExecutor exeService = new ThreadPoolExecutor(1, 1, 20, TimeUnit.SECONDS, queue);
     private static final Map<String, NetworkDataSource> sources = new ConcurrentHashMap<String, NetworkDataSource>();
     NetworkDataSource googlePlaces;
-    ArrayList<String> friends;
     public String id;
+    public static int count;
+    public static final int MAX=50;
 
     private static Toast myToast = null;
     private static VerticalTextView text = null;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        count=0;
 
-        id = AccessToken.getCurrentAccessToken().getUserId();
-        friends = DBHandler.getFriendIds(id);
+
 
         // Create toast
         myToast = new Toast(getApplicationContext());
@@ -80,17 +77,11 @@ public class CameraActivity extends AugmentedReality {
         LocalDataSource localData = new LocalDataSource(this.getResources());
         ARData.addMarkers(localData.getMarkers());
 
-        /*NetworkDataSource wikipedia = new WikipediaDataSource(this.getResources());
-        sources.put("wiki", wikipedia);*/
         googlePlaces = new GooglePlacesDataSource(this.getResources());
         sources.put("googlePlaces", googlePlaces);
-
-
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public void onStart() {
         super.onStart();
@@ -99,9 +90,7 @@ public class CameraActivity extends AugmentedReality {
         updateData(last.getLatitude(), last.getLongitude(), last.getAltitude());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -109,9 +98,7 @@ public class CameraActivity extends AugmentedReality {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.v(TAG, "onOptionsItemSelected() item=" + item);
@@ -132,9 +119,7 @@ public class CameraActivity extends AugmentedReality {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     public void onLocationChanged(Location location) {
         super.onLocationChanged(location);
@@ -142,18 +127,16 @@ public class CameraActivity extends AugmentedReality {
         updateData(location.getLatitude(), location.getLongitude(), location.getAltitude());
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
+
     protected void markerTouched(Marker marker) {
-        text.setText(marker.getName());
+        IconMarker mark = (IconMarker) marker;
+        text.setText(mark.getId());
         myToast.show();
+        Intent i = new Intent(this, FriendProfileActivity.class);
+        i.putExtra("id", mark.getId());
+        startActivity(i);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void updateDataOnZoom() {
         super.updateDataOnZoom();
@@ -162,15 +145,16 @@ public class CameraActivity extends AugmentedReality {
     }
 
     private void updateData(final double lat, final double lon, final double alt) {
-        Log.d("kaan", "update Data");
-        /*if(googlePlaces != null)
-            ARData.addMarkers(googlePlaces.getMarkerList(2, AccessToken.getCurrentAccessToken().getUserId(), ARData.getRadius()));*/
-        try {
+       try {
             exeService.execute(new Runnable() {
                 @Override
                 public void run() {
+                    count++;
+                    if(count>MAX)
+                        return;
                     for (NetworkDataSource source : sources.values())
-                        ARData.addMarkers(source.getMarkerList(2, id, ARData.getRadius(),friends));
+                        ARData.addMarkers(source.getMarkerList(2, id, ARData.getRadius()));
+                    Log.d("camerakaan", ARData.getMarkers().size() + "");
                 }
             });
         } catch (RejectedExecutionException rej) {
@@ -179,23 +163,4 @@ public class CameraActivity extends AugmentedReality {
             Log.e(TAG, "Exception running download Runnable. " + e.toString());
         }
     }
-
-    /*private static boolean download(NetworkDataSource source, double lat, double lon, double alt) {
-        if (source == null) return false;
-
-        String url = null;
-        try {
-            url = source.createRequestURL(lat, lon, alt, ARData.getRadius(), locale);
-        } catch (NullPointerException e) {
-            return false;
-        }
-
-        Log.d("kaan", "download");
-        List<Marker> markers = source.getMarkerList(2, AccessToken.getCurrentAccessToken().getUserId(), ARData.getRadius());
-
-        ARData.addMarkers(markers);
-        return true;
-    }*/
-
-
 }

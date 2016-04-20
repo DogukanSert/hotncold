@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 
 import com.jwetherell.augmented_reality.R;
-import com.jwetherell.augmented_reality.ui.IconMarker;
 import com.jwetherell.augmented_reality.ui.Marker;
 
 import java.util.ArrayList;
@@ -37,8 +36,8 @@ public class LocalDataSource extends DataSource {
     }
 
     public List<Marker> getMarkers() {
-        Marker atl = new IconMarker("ATL ICON", 39.931268, -75.051262, 0, Color.DKGRAY, icon);
-        cachedMarkers.add(atl);
+        //Marker atl = new IconMarker("ATL ICON", 39.931268, -75.051262, 0, Color.DKGRAY, icon);
+        //cachedMarkers.add(atl);
 
         Marker home = new Marker("ATL CIRCLE", 39.931269, -75.051231, 0, Color.YELLOW);
         cachedMarkers.add(home);
