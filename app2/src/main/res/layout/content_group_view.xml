@@ -98,6 +98,8 @@
         android:layout_margin="@dimen/fab_margin"
         android:clickable="false"
         android:background="#920497"
-        app:backgroundTint="#ffffff" />
+        app:backgroundTint="#ffffff"
+        android:id="@+id/toGroupCamera"
+        android:onClick="toCamera" />
 
 </android.support.design.widget.CoordinatorLayout>

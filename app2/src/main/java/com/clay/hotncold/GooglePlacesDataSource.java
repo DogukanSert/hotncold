@@ -81,6 +81,7 @@ public class GooglePlacesDataSource extends NetworkDataSource {
     @Override
     public List<Marker> getMarkerList(int type, String id, float radius)
     {
+        Log.d("camerakaan", "Type: " + type + " id: " + id);
         if(count>MAX || count==0){
             if(type==2){
                 Log.d("camerakaan", type +"");
@@ -98,6 +99,8 @@ public class GooglePlacesDataSource extends NetworkDataSource {
                 }
             }
             else if(type == 0){
+                locs.clear();
+                users.clear();
                 locs.add(DBHandler.getFriendLoc(id));
                 users.add(DBHandler.getUser(id));
             }

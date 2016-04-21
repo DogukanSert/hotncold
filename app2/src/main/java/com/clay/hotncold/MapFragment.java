@@ -10,11 +10,11 @@ import android.hardware.SensorEventListener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,9 +120,7 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
         loc.setTime(0);
         loc.setSpeed(0);
 
-        new LocationAdd().execute(loc);
-
-
+        DBHandler.locationInsert(loc);
 
         LatLng PERTH = new LatLng(latitude, longitude);
 		/*Marker perth = map.addMarker(new MarkerOptions()
@@ -146,6 +144,7 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
                 for(int i=0; i<friends.size(); i++)
                 {
                     UserLoc u = DBHandler.getFriendLoc(friends.get(i));
+                    Log.d("Map", u.getId());
                     Message msgObj = handler.obtainMessage();
                     Bundle b = new Bundle();
                     MapFragment.setIsFirst(true);
@@ -165,6 +164,7 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
                         Message msgObj = handler.obtainMessage();
                         Bundle b = new Bundle();
 
+                        Log.d("Map", u.getId());
                         MapFragment.setIsFirst(false);
                         b.putInt("i",i);
                         b.putString("id", friends.get(i));
@@ -262,7 +262,7 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
         u.setSpeed(location.getSpeed());
         u.setTime(location.getTime());
         u.setAlt(location.getAltitude());
-        new UpdateLoc().execute(u);
+        DBHandler.locationInsert(u);
     }
 
     @Override
@@ -285,7 +285,8 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
         u.setTime(0);
         u.setAlt(0);
 
-        new UpdateLoc().execute(u);
+
+        DBHandler.locationInsert(u);
     }
 
     @Override
@@ -298,21 +299,7 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
 
     }
 
-    private class LocationAdd extends
-            AsyncTask<UserLoc, Void, Void> {
 
-        protected Void doInBackground(UserLoc... f) {
-            DBHandler.insertLatLong(f[0]);
-            return null;
-        }
-    }
 
-    public class UpdateLoc extends
-            AsyncTask<UserLoc, Void, Void> {
 
-        protected Void doInBackground(UserLoc... f) {
-            DBHandler.updateLatLong(f[0]);
-            return null;
-        }
-    }
 }

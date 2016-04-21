@@ -31,8 +31,26 @@ public class DBHandler {
         }
     }
 
+    private static void insertLatLongAsync(UserLoc u){
+        AmazonDynamoDBClient ddb = LoginActivity.clientManager
+                .ddb();
+        DynamoDBMapper mapper = new DynamoDBMapper(ddb);
+
+        try {
+            mapper.save(u);
+        } catch (AmazonServiceException ex) {
+            Log.e("kaan", "Error inserting users");
+            LoginActivity.clientManager
+                    .wipeCredentialsOnAuthError(ex);
+        }
+    }
+
     public static void insertLatLong(UserLoc u)
     {
+        new DBHandler.LocationAdd().execute(u);
+    }
+
+    private static void insertUser(User u) {
         AmazonDynamoDBClient ddb = LoginActivity.clientManager
                 .ddb();
         DynamoDBMapper mapper = new DynamoDBMapper(ddb);
@@ -46,21 +64,7 @@ public class DBHandler {
         }
     }
 
-    public static void insertUser(User u) {
-        AmazonDynamoDBClient ddb = LoginActivity.clientManager
-                .ddb();
-        DynamoDBMapper mapper = new DynamoDBMapper(ddb);
-
-        try {
-            mapper.save(u);
-        } catch (AmazonServiceException ex) {
-            Log.e("kaan", "Error inserting users");
-            LoginActivity.clientManager
-                    .wipeCredentialsOnAuthError(ex);
-        }
-    }
-
-    public static void insertFriendship(Friendship f) {
+    private static void insertFriendship(Friendship f) {
         AmazonDynamoDBClient ddb = LoginActivity.clientManager
                 .ddb();
         DynamoDBMapper mapper = new DynamoDBMapper(ddb);
@@ -140,7 +144,6 @@ public class DBHandler {
         mapper.save(myFriendship);
     }
 
-
     public static void deleteFriends(ArrayList<String> del)
     {
         Log.d("elif", "kaaan");
@@ -148,8 +151,7 @@ public class DBHandler {
         Log.d("elif", "kaaan");
     }
 
-    public static void updateLatLong(UserLoc u)
-    {
+    private static void updateLatLongAsync(UserLoc u){
         AmazonDynamoDBClient ddb = LoginActivity.clientManager
                 .ddb();
         DynamoDBMapper mapper = new DynamoDBMapper(ddb);
@@ -161,6 +163,11 @@ public class DBHandler {
             LoginActivity.clientManager
                     .wipeCredentialsOnAuthError(ex);
         }
+    }
+
+    private static void updateLatLong(UserLoc u)
+    {
+        new DBHandler.UpdateLoc().execute(u);
     }
     private static Group getGroupAsync(String name)
     {
@@ -400,14 +407,15 @@ public class DBHandler {
         new DBHandler.UserAdd().execute(u);
     }
 
+    public static void locationInsert(UserLoc u)
+    {
+        new DBHandler.LocationAdd().execute(u);
+    }
+
     public static void friendshipInsert(Friendship f) {
         new DBHandler.FriendshipAdd().execute(f);
     }
 
-    public void createGroup(ArrayList<String> users, String id, String groupName)
-    {
-
-    }
 
     private static class GetGroup extends
             AsyncTask<String, Void, Group> {
@@ -565,6 +573,23 @@ public class DBHandler {
         }
     }
 
+    private static class LocationAdd extends
+            AsyncTask<UserLoc, Void, Void> {
+
+        protected Void doInBackground(UserLoc... f) {
+            DBHandler.insertLatLongAsync(f[0]);
+            return null;
+        }
+    }
+
+    public static class UpdateLoc extends
+            AsyncTask<UserLoc, Void, Void> {
+
+        protected Void doInBackground(UserLoc... f) {
+            DBHandler.updateLatLongAsync(f[0]);
+            return null;
+        }
+    }
 
 }
 

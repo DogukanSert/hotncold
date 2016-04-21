@@ -158,6 +158,8 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
 
                     case R.id.camera:
                         Intent in = new Intent(getApplicationContext(), CameraActivity.class);
+                        in.putExtra("type", 2);
+                        in.putExtra("id", AccessToken.getCurrentAccessToken().getUserId());
                         startActivity(in);
 
                         return true;

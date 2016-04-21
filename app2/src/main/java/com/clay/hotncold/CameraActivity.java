@@ -44,12 +44,14 @@ public class CameraActivity extends AugmentedReality {
     private static final ThreadPoolExecutor exeService = new ThreadPoolExecutor(1, 1, 20, TimeUnit.SECONDS, queue);
     private static final Map<String, NetworkDataSource> sources = new ConcurrentHashMap<String, NetworkDataSource>();
     NetworkDataSource googlePlaces;
-    public String id;
     public static int count;
     public static final int MAX=50;
 
     private static Toast myToast = null;
     private static VerticalTextView text = null;
+    private int type;
+    private String id;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,7 +59,10 @@ public class CameraActivity extends AugmentedReality {
 
         count=0;
 
+        type = getIntent().getIntExtra("type", 2);
+        id = getIntent().getStringExtra("id");
 
+        ARData.removeMarkers();
 
         // Create toast
         myToast = new Toast(getApplicationContext());
@@ -153,7 +158,7 @@ public class CameraActivity extends AugmentedReality {
                     if(count>MAX)
                         return;
                     for (NetworkDataSource source : sources.values())
-                        ARData.addMarkers(source.getMarkerList(2, id, ARData.getRadius()));
+                        ARData.addMarkers(source.getMarkerList(type, id, ARData.getRadius()));
                     Log.d("camerakaan", ARData.getMarkers().size() + "");
                 }
             });

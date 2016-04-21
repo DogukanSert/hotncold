@@ -202,6 +202,6 @@
         android:src="@drawable/ic_discuss"
         android:layout_margin="@dimen/fab_margin"
         android:clickable="true"
-        android:onClick="getFriendListView"/>
+        android:onClick="toCamera"/>
 
 </android.support.design.widget.CoordinatorLayout>

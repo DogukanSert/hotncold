@@ -15,6 +15,13 @@ public class UserLoc{
     public float speed;
     public long time;
 
+    public UserLoc(double lat, double lon, float speed, long time, double alt) {
+        this.lat = lat;
+        this.lon = lon;
+        this.speed = speed;
+        this.time = time;
+        this.alt = alt;
+    }
     public UserLoc() {
     }
 
@@ -73,10 +80,5 @@ public class UserLoc{
         this.time = time;
     }
 
-    public UserLoc(double lat, double lon, float speed, long time) {
-        this.lat = lat;
-        this.lon = lon;
-        this.speed = speed;
-        this.time = time;
-    }
+
 }

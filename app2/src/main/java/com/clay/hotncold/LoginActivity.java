@@ -112,6 +112,9 @@ public class LoginActivity extends AppCompatActivity {
                         newUser = DBHandler.getUser(id);
 
                         user = new User(object);
+                        UserLoc userLoc = new UserLoc(0,0,0,0,0);
+                        userLoc.setId(id);
+                        DBHandler.insertLatLong(userLoc);
                         DBHandler.userInsert(user);
 
                         if(newUser == null)

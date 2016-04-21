@@ -195,8 +195,10 @@ public class FriendProfileActivity extends AppCompatActivity {
         return true;
     }
 
-    public void getFriendListView(View view){
-        Intent i = new Intent(this, FriendListActivity.class);
-        startActivity(i);
+    public void toCamera(View view){
+        Intent in = new Intent(getApplicationContext(), CameraActivity.class);
+        in.putExtra("type", 0);
+        in.putExtra("id", id);
+        startActivity(in);
     }
 }

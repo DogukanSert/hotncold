@@ -1,5 +1,12 @@
 package com.jwetherell.augmented_reality.data;
 
+import android.location.Location;
+import android.util.Log;
+
+import com.jwetherell.augmented_reality.common.Matrix;
+import com.jwetherell.augmented_reality.common.Orientation.ORIENTATION;
+import com.jwetherell.augmented_reality.ui.Marker;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,13 +16,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import android.location.Location;
-import android.util.Log;
-
-import com.jwetherell.augmented_reality.common.Matrix;
-import com.jwetherell.augmented_reality.common.Orientation.ORIENTATION;
-import com.jwetherell.augmented_reality.ui.Marker;
 
 /**
  * Abstract class which should be used to set global data.
@@ -173,6 +173,11 @@ public abstract class ARData {
         synchronized (ARData.currentLocationLock) {
             return ARData.currentLocation;
         }
+    }
+
+    public static void removeMarkers()
+    {
+        markerList.clear();
     }
 
     /**

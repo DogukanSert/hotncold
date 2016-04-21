@@ -1,12 +1,15 @@
 package com.clay.hotncold.group;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.clay.hotncold.CameraActivity;
 import com.clay.hotncold.DBHandler;
 import com.clay.hotncold.R;
 
@@ -49,6 +52,14 @@ public class GroupViewActivity extends AppCompatActivity {
     private void loadBackdrop() {
         final ImageView imageView = (ImageView) findViewById(R.id.backdrop);
 
+    }
+
+    public void toCamera(View v)
+    {
+        Intent in = new Intent(getApplicationContext(), CameraActivity.class);
+        in.putExtra("type", 1);
+        in.putExtra("id", groupname);
+        startActivity(in);
     }
 
 }
