@@ -189,7 +189,8 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
                         LatLng PERTH = new LatLng(Double.parseDouble(lat), Double.parseDouble(lon));
                         markers[i] = map.addMarker(new MarkerOptions()
                                 .position(PERTH)
-                                .draggable(true));
+                                .draggable(true)
+                                .title(b.getString("id")));
 
                         //}
                     }
@@ -199,7 +200,6 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
                         if(markers[i]!=null)
                             markers[i].setPosition(new LatLng(Double.parseDouble(lat), Double.parseDouble(lon)));
                     }
-
                 }
             };
         };
@@ -297,8 +297,4 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
-
-
-
-
 }

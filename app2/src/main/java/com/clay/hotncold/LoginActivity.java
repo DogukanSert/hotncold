@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -45,6 +46,11 @@ public class LoginActivity extends AppCompatActivity {
         clientManager = new AmazonClientManager(this);
 
         newUser = new User();
+        if(AccessToken.getCurrentAccessToken()!=null)
+        {
+            Intent i = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(i);
+        }
 
         login();
 
@@ -97,13 +103,12 @@ public class LoginActivity extends AppCompatActivity {
                         newUser = DBHandler.getUser(id);
 
                         user = new User(object);
-                        UserLoc userLoc = new UserLoc(0,0,0,0,0);
+                        UserLoc userLoc = new UserLoc(0, 0, 0, 0, 0);
                         userLoc.setId(id);
                         DBHandler.insertLatLong(userLoc);
                         DBHandler.userInsert(user);
 
-                        if(newUser == null)
-                        {
+                        if (newUser == null) {
                             Log.d("kaan", "null");
                         }
                     }
@@ -130,15 +135,14 @@ public class LoginActivity extends AppCompatActivity {
                                 myFriends.add(rec.getString("id"));
                             }
                             Friendship f = new Friendship();
-                            String id =loginResult.getAccessToken().getUserId();
+                            String id = loginResult.getAccessToken().getUserId();
                             f.setMe(id);
                             f.setMyFriends(s);
 
-                            if(DBHandler.getFriendIds(id)==null) {
+                            if (DBHandler.getFriendIds(id) == null) {
                                 Log.d("kaan", "null geldi ekledi ");
                                 DBHandler.friendshipInsert(f);
-                                for(String user : myFriends)
-                                {
+                                for (String user : myFriends) {
                                     DBHandler.addMeToFriends(user);
                                 }
                             }

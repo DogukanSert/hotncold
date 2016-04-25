@@ -101,27 +101,13 @@
         android:layout_width="wrap_content"
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|right|end"
-        android:src="@drawable/ic_group_icon"
+        android:src="@drawable/ic_wgroup"
         android:layout_margin="@dimen/fab_margin"
         android:clickable="false"
-        app:backgroundTint="#046697"
+        app:backgroundTint="#b70600"
         android:id="@+id/toGroupCamera"
-        android:onClick="toCamera" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:src="@drawable/ic_add_group"
-        android:layout_marginRight="36dp"
-        android:layout_marginBottom="47dp"
-        android:layout_marginEnd="36dp"
-        android:clickable="true"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        app:backgroundTint="#046697" />
+        android:onClick="toCamera"
+        android:background="#b70600" />
 
 
 </android.support.design.widget.CoordinatorLayout>

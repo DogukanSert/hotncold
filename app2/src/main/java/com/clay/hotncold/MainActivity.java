@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.clay.hotncold.filter.FilterActivity;
 import com.clay.hotncold.group.CreateGroupFragment;
 import com.clay.hotncold.group.Group;
 import com.clay.hotncold.group.GroupFragment;
@@ -173,10 +174,8 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
                         return true;
 
                     case R.id.filters:
-                        FilterFragment fra = new FilterFragment();
-                        android.support.v4.app.FragmentTransaction fragmentTransaction2 = getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction2.replace(R.id.frame, fra);
-                        fragmentTransaction2.commit();
+                        Intent i = new Intent(getApplicationContext(), FilterActivity.class);
+                        startActivity(i);
                         return true;
                     case R.id.groups:
                         GroupFragment frag = new GroupFragment();
@@ -431,12 +430,21 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
 
         String friendsDB = "";
 
+        if(friends == null){
+            Toast.makeText(getApplicationContext(),"Group must contain a friend.",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         for(int i=0; i<friends.size(); i++) {
             String[] parts = friends.get(i).split("-");
             friendsDB += parts[1] + "-";
             Log.d("kaan", friends.get(i));
         }
 
+        if(CreateGroupFragment.getGroupName().length()<6){
+            Toast.makeText(getApplicationContext(),"Group name must be at least 6 characters.",Toast.LENGTH_SHORT).show();
+            return;
+        }
         String groupName = CreateGroupFragment.getGroupName() + "-" + AccessToken.getCurrentAccessToken().getUserId();
 
         Group g = new Group();

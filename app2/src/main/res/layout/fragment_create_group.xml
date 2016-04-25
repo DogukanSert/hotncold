@@ -67,7 +67,8 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        app:backgroundTint="#046697" />
+        app:backgroundTint="#b70600"
+        android:background="#b70600" />
 
 
 

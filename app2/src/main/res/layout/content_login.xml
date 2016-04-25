@@ -8,10 +8,10 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@drawable/stars_fixed"
-    android:alpha="0.3"
+    android:background="@drawable/stars_fixed4"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.ckaan.hotncold.LoginActivity"
+    android:visibility="visible"
     tools:showIn="@layout/activity_login">
 
     <com.facebook.login.widget.LoginButton
@@ -21,7 +21,8 @@
         android:layout_gravity="center_horizontal"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="104dp" />
+        android:layout_marginBottom="104dp"
+        android:alpha="0.7" />
 
     <ImageView
         android:layout_width="234dp"
@@ -30,7 +31,6 @@
         android:background="@drawable/logooo3"
         android:layout_above="@+id/login_button"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="106dp"/>
-
-
+        android:layout_marginBottom="106dp"
+        android:alpha="0.6" />
 </RelativeLayout>
