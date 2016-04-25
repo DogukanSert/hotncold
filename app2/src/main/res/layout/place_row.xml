@@ -39,7 +39,7 @@
             android:id="@+id/placeicon"
             android:layout_width="@dimen/list_item_avatar_size"
             android:layout_height="@dimen/list_item_avatar_size"
-            android:src="@drawable/ic_launcher"
+            android:src="@mipmap/ic_launcher"
             android:clickable="true" />
 
 

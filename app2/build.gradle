@@ -30,7 +30,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':linkedin-sdk')
     compile project(':androidAugmentRealityFramework')
     compile 'com.android.support:appcompat-v7:24.0.0-alpha2'
     compile 'com.android.support:design:24.0.0-alpha2'

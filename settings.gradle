@@ -1,3 +1,3 @@
-include ':app2', ':linkedin-sdk'
+include ':app2'
 
 include ':androidAugmentRealityFramework'

@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -19,10 +17,6 @@ import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.linkedin.platform.LISessionManager;
-import com.linkedin.platform.errors.LIAuthError;
-import com.linkedin.platform.listeners.AuthListener;
-import com.linkedin.platform.utils.Scope;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,15 +45,6 @@ public class LoginActivity extends AppCompatActivity {
         clientManager = new AmazonClientManager(this);
 
         newUser = new User();
-
-        Button login_linkedin_btn = (Button) findViewById(R.id.LI_login_button);
-        assert login_linkedin_btn != null;
-        login_linkedin_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                login_linkedin();
-            }
-        });
 
         login();
 
@@ -165,6 +150,9 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
                 ).executeAsync();
+
+                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(i);
             }
 
             @Override
@@ -181,55 +169,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         cbm.onActivityResult(requestCode, resultCode, data);
-        LISessionManager.getInstance(getApplicationContext()).onActivityResult(this,
-                requestCode, resultCode, data);
 
         if (cbm.onActivityResult(requestCode, resultCode, data)) {
             return;
         }
     }
-
-    //ekledim Elif
-
-
-    private static Scope buildScope() {
-        return Scope.build(Scope.R_BASICPROFILE, Scope.R_EMAILADDRESS);
-    }
-
-    public void login_linkedin(){
-        LISessionManager.getInstance(getApplicationContext()).init(this,
-                buildScope(), new AuthListener() {
-                    @Override
-                    public void onAuthSuccess() {
-
-                        Toast.makeText(getApplicationContext(), "success" , Toast.LENGTH_LONG).show();
-
-                    }
-
-                    @Override
-                    public void onAuthError(LIAuthError error) {
-
-                        Toast.makeText(getApplicationContext(), "failed " + error.toString(), Toast.LENGTH_LONG).show();
-                    }
-                }, true);
-    }
-
-    public void continueToInfo(View view){
-
-        /*for(int i =0; i<likenames.size(); i++)
-        {
-            Log.d("kaan", likenames.get(i) + " " + i);
-        }*/
-
-
-
-        Intent i = new Intent(this, MainActivity.class);
-        startActivity(i);
-    }
-
-
-
-
-
-
 }

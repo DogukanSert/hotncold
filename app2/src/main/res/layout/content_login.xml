@@ -8,6 +8,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/stars_fixed"
+    android:alpha="0.3"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.ckaan.hotncold.LoginActivity"
     tools:showIn="@layout/activity_login">
@@ -16,29 +18,19 @@
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_gravity="center_horizontal" />
-
-    <Button
-        android:id="@+id/LI_login_button"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:background="@drawable/login"
-        android:layout_below="@+id/login_button"
-        android:layout_marginTop="34dp"
-        android:layout_alignEnd="@+id/login_button"
-        android:layout_alignStart="@+id/login_button"
-        android:layout_alignParentEnd="false" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Continue"
-        android:id="@+id/Continue"
+        android:layout_gravity="center_horizontal"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="68dp"
-        android:onClick="continueToInfo" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="104dp" />
+
+    <ImageView
+        android:layout_width="234dp"
+        android:layout_height="191dp"
+        android:id="@+id/imageView"
+        android:background="@drawable/logooo3"
+        android:layout_above="@+id/login_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="106dp"/>
+
 
 </RelativeLayout>
