@@ -1,0 +1,19 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.clay.hotncold.FriendRequestFragment"
+    android:background="#ffffff">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/friend_request_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        android:backgroundTint="#ffffff"
+        android:background="#ffffff"
+        android:layout_below="@+id/toolbar"
+        android:layout_alignParentStart="true" />
+
+</RelativeLayout>

@@ -3,25 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:backgroundTint="#ffffff"
+    android:background="#ffffff">
 
 
-        <!-- Editext for Search -->
-        <EditText android:id="@+id/inputGroupSearch"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:hint="Search Group"
-            android:inputType="textVisiblePassword"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="vertical"
-            android:layout_gravity="left|center_vertical"
-            android:layout_below="@+id/inputGroupSearch"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        android:layout_gravity="left|center_vertical"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:backgroundTint="#ffffff" />
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

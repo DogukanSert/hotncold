@@ -193,6 +193,10 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
                         return true;
                     case R.id.logout:
                         Toast.makeText(getApplicationContext(),"Log out Selected",Toast.LENGTH_SHORT).show();
+                        PlaceFragment pf = new PlaceFragment();
+                        android.support.v4.app.FragmentTransaction fragmentTransaction6 = getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction6.replace(R.id.frame, pf);
+                        fragmentTransaction6.commit();
                         return true;
                     default:
                         Toast.makeText(getApplicationContext(),"Somethings Wrong",Toast.LENGTH_SHORT).show();

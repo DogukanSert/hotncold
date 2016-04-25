@@ -8,18 +8,22 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.clay.hotncold.DBHandler;
 import com.clay.hotncold.R;
+import com.daimajia.swipe.SwipeLayout;
+import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +32,10 @@ import java.util.List;
 public class GroupFragment extends Fragment {
 
     private List<Group> myGroups;
+    private static ArrayList<Group> deletedGroups;
     EditText inputGroupSearch;
     private RecyclerView recyclerView;
-    private GroupAdapter mAdapter;
+    private GroupFragmentAdapter mAdapter;
     DBHandler db;
     //private OnFragmentInteractionListener mListener;
 
@@ -49,21 +54,9 @@ public class GroupFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_group, container, false);
-        inputGroupSearch = (EditText) view.findViewById(R.id.inputGroupSearch);
+        //inputGroupSearch = (EditText) view.findViewById(R.id.inputGroupSearch);
         recyclerView = (RecyclerView)view.findViewById(R.id.recyclerView);
         FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        //mAdapter = new GroupAdapter(getData());
-
-        /*String[] groupnames = {"CS 101", "Close Friends", "Family", "High School", "College", "CS 492", "Digital Design", "Automata Class"};
-        for(int i = 0; i < groupnames.length; i++){
-            Group current = new Group(groupnames[i]);
-            myGroups.add(current);
-            current.addFriendstoGroup("Elif Ağım");
-            current.addFriendstoGroup("Cemil Kaan Akyol");
-            current.addFriendstoGroup("Doğukan Sert");
-            current.addFriendstoGroup("Elif Yağmur Eğrice");
-            current.addFriendstoGroup("Bahadır Ünal");
-        }*/
 
         myGroups = DBHandler.getMyGroups();
 
@@ -76,55 +69,11 @@ public class GroupFragment extends Fragment {
             g.setMyFriends(myFriends);
         }
 
-        mAdapter = new GroupAdapter(myGroups);
+        mAdapter = new GroupFragmentAdapter(getActivity(),myGroups);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
-
-        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(this.getContext(), recyclerView, new ClickListener() {
-            @Override
-            public void onClick(View view, int position) {
-                Log.d("inside", "inside on click");
-                Group g = myGroups.get(position);
-                Log.d("inside", "position:" + position);
-                g.setGroupName(myGroups.get(position).getGroupName());
-                Log.d("groupname", g.getGroupName());
-                Intent i = new Intent(getActivity(), GroupViewActivity.class);
-                i.putExtra("groupname", g.getGroupName());
-                startActivity(i);
-            }
-
-            @Override
-            public void onLongClick(View view, int position) {
-
-            }
-        }));
-
-        /**
-         * Enabling Search Filter
-         * */
-        inputGroupSearch.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void onTextChanged(CharSequence cs, int arg1, int arg2, int arg3) {
-                // When user changed the Text
-                GroupFragment.this.mAdapter.getFilter().filter(cs);
-                mAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2,
-                                          int arg3) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable arg0) {
-                // TODO Auto-generated method stub
-            }
-        });
 
         //when user selects the fab in order to add new group
 
@@ -136,20 +85,9 @@ public class GroupFragment extends Fragment {
                 }
         );
 
-
         return view;
     }
 
-    public static List<Group> getData(){
-
-        List<Group> mygroups = new ArrayList<>();
-        String[] groupnames = {"CS 101", "Close Friends", "Family", "High School", "College", "CS 492", "Digital Design", "Automata Class"};
-        for(int i = 0; i < groupnames.length; i++){
-            Group current = new Group(groupnames[i]);
-            mygroups.add(current);
-        }
-        return mygroups;
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -222,6 +160,133 @@ public class GroupFragment extends Fragment {
 
         }
 
+    }
+
+    public void deleteGroupButtonClicked(View v)
+    {
+        Toast.makeText( v.getContext(), "Group has been deleted successfully.", Toast.LENGTH_SHORT).show();
+
+        mAdapter.notifyDataSetChanged();
+    }
+
+
+
+
+    public static class GroupFragmentAdapter
+            extends RecyclerSwipeAdapter<GroupFragmentAdapter.ViewHolder> {
+
+        private final TypedValue mTypedValue = new TypedValue();
+        private int mBackground;
+        private List<Group> groups;
+        public ArrayList<Group> selectedGroups;
+
+        @Override
+        public int getSwipeLayoutResourceId(int position) {
+            return 0;
+        }
+
+        public static class ViewHolder extends RecyclerView.ViewHolder {
+            public String mBoundString;
+
+            public final View mView;
+            public final ImageView mImageView;
+            public final TextView userNameTextView;
+            public final SwipeLayout swipeLayout;
+
+            ImageButton deleteGroupButton;
+            ImageButton goToGroupButton;
+
+            public ViewHolder(View view) {
+                super(view);
+                mView = view;
+                mImageView = (ImageView) view.findViewById(R.id.groupicon);
+                userNameTextView = (TextView) view.findViewById(R.id.groupnametext);
+                swipeLayout = (SwipeLayout) itemView.findViewById(R.id.swipe_groups);
+                deleteGroupButton = (ImageButton) itemView.findViewById(R.id.deleteGroupButton);
+                goToGroupButton = (ImageButton)itemView.findViewById(R.id.goToGroupButton);
+            }
+
+            @Override
+            public String toString() {
+                return super.toString() + " '" + userNameTextView.getText();
+            }
+        }
+
+
+        public Group getValueAt(int position) {
+            return groups.get(position);
+        }
+
+        public GroupFragmentAdapter(Context context, List<Group> items) {
+            context.getTheme().resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
+            mBackground = mTypedValue.resourceId;
+            groups = items;
+            selectedGroups = new ArrayList<>();
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.group_row, parent, false);
+            view.setBackgroundResource(mBackground);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(final ViewHolder holder, final int position) {
+
+
+            final Group currentGroup = groups.get(position);
+            holder.mBoundString = currentGroup.getGroupName();
+            holder.userNameTextView.setText(currentGroup.getGroupName());
+            holder.swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
+
+            // Drag From Right
+            holder.swipeLayout.addDrag(SwipeLayout.DragEdge.Right, holder.swipeLayout.findViewById(R.id.bottom_wrapper));
+
+
+            holder.deleteGroupButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //selectedGroups.add(currentGroup);
+                    groups.remove(currentGroup);
+                    Toast.makeText(v.getContext(), "Clicked on" + holder.userNameTextView.getText().toString(), Toast.LENGTH_SHORT).show();
+                    notifyDataSetChanged();
+                    setDeletedGroups(selectedGroups);
+
+                }
+            });
+
+            holder.goToGroupButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Context context = v.getContext();
+                    Intent i = new Intent(context, GroupViewActivity.class);
+                    i.putExtra("groupname", holder.mBoundString);
+                    Toast.makeText(v.getContext(), "Clicked on" + holder.userNameTextView.getText().toString(), Toast.LENGTH_SHORT).show();
+                    context.startActivity(i);
+                }
+            });
+
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return groups.size();
+        }
+
+
+    }
+
+    public static ArrayList<Group> getDeletedGroups()
+    {
+        return deletedGroups;
+    }
+
+    public static void setDeletedGroups(ArrayList<Group> del)
+    {
+        deletedGroups = del;
     }
 }
 

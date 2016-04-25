@@ -1,8 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
-
 <com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:swipe="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/swipe_groups"
+    android:id="@+id/swipe_groupView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     swipe:leftEdgeSwipeOffset="0dp"
@@ -16,26 +14,24 @@
         android:layout_height="match_parent"
         android:weightSum="2">
 
-
         <ImageButton
-            android:id="@+id/deleteGroupButton"
+            android:id="@+id/deleteFriendButton"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
             android:gravity="center"
-            android:onClick="deleteGroupButtonClicked"
+            android:onClick="deleteButtonClicked"
             android:src="@drawable/ic_delete" />
-
         <ImageButton
-            android:id="@+id/goToGroupButton"
+            android:id="@+id/goToProfile"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
             android:gravity="center"
-            android:onClick="goToGroupButtonClicked"
-            android:src="@drawable/ic_group" />
+            android:onClick="deleteButtonClicked"
+            android:src="@drawable/ic_puzzlegroup" />
     </LinearLayout>
 
     <!-- Top View,  Row itemView of RecyclerView -->
@@ -48,23 +44,20 @@
         android:paddingBottom="8dp"
         android:gravity="center_vertical">
 
-        <ImageView
-            android:id="@+id/groupicon"
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/avatar"
             android:layout_width="@dimen/list_item_avatar_size"
             android:layout_height="@dimen/list_item_avatar_size"
-            android:src="@mipmap/ic_group_back"
-            android:clickable="true" />
-
+            android:layout_marginRight="16dp"/>
 
         <TextView
-            android:id="@+id/groupnametext"
-            android:layout_width="268dp"
+            android:id="@+id/groupfriendname"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Group name"
+            android:text="Add friend to group"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/groupicon"
-            android:layout_toEndOf="@+id/groupicon" />
-
+            android:layout_toRightOf="@+id/friendProfile"
+            android:layout_toEndOf="@+id/friendProfile" />
 
     </LinearLayout>
 
