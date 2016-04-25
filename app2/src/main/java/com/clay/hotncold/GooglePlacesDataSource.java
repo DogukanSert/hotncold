@@ -3,9 +3,12 @@ package com.clay.hotncold;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.util.Log;
 
 import com.jwetherell.augmented_reality.R;
 import com.jwetherell.augmented_reality.data.NetworkDataSource;
+import com.jwetherell.augmented_reality.ui.IconMarker;
 import com.jwetherell.augmented_reality.ui.Marker;
 
 import org.json.JSONArray;
@@ -24,7 +27,7 @@ import java.util.List;
 public class GooglePlacesDataSource extends NetworkDataSource {
 
 	private static final String URL = "https://maps.googleapis.com/maps/api/place/search/json?";
-	private static final String TYPES = "airport|amusement_park|aquarium|art_gallery|bus_station|campground|car_rental|city_hall|embassy|establishment|hindu_temple|local_governemnt_office|mosque|museum|night_club|park|place_of_worship|police|post_office|stadium|spa|subway_station|synagogue|taxi_stand|train_station|travel_agency|University|zoo";
+	private static  String types ;
 
 	private static String key = null;
 	private static Bitmap icon = null;
@@ -46,7 +49,8 @@ public class GooglePlacesDataSource extends NetworkDataSource {
 	@Override
 	public String createRequestURL(double lat, double lon, double alt, float radius, String locale) {
 		try {
-			return URL + "location="+lat+","+lon+"&radius="+(radius*1000.0f)+"&types="+TYPES+"&sensor=true&key="+key;
+			Log.d("places", "url: " + URL + "location="+lat+","+lon+"&radius="+(radius*1000.0f)+"&types="+PlacesCameraActivity.getTypes()+"&sensor=true&key="+key);
+			return URL + "location="+lat+","+lon+"&radius="+(radius*1000.0f)+"&types="+PlacesCameraActivity.getTypes()+"&sensor=true&key="+key;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -121,7 +125,7 @@ public class GooglePlacesDataSource extends NetworkDataSource {
 			if (lat != null) {
 				String user = jo.getString("name");
 
-				//ma = new IconMarker(user + ": " + jo.getString("name"), lat, lon, 0, Color.RED, icon);
+				ma = new IconMarker(user + ": " + jo.getString("name"), lat, lon, 0, Color.RED, icon, "0");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

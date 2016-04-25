@@ -399,6 +399,15 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
         transaction.commit();
     }
 
+    public void goToCameraPlaces(View v) {
+        String types = PlaceFragment.getPlaces();
+        types = removeLastChar(types);
+        Intent i = new Intent(getApplicationContext(),PlacesCameraActivity.class);
+        i.putExtra("types", types);
+        startActivity(i);
+
+    }
+
     // TODO: DB işi var yine amk
     public void doneButtonClicked(View v) {
         ArrayList<String> friends = CreateGroupFragment.getSelectedfriend();
@@ -426,5 +435,9 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
         android.support.v4.app.FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.frame, cb);
         transaction.commit();
+    }
+
+    private static String removeLastChar(String str) {
+        return str.substring(0,str.length()-1);
     }
 }

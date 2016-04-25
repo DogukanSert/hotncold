@@ -14,8 +14,6 @@ import android.widget.Toast;
 import com.jwetherell.augmented_reality.R;
 import com.jwetherell.augmented_reality.activity.AugmentedReality;
 import com.jwetherell.augmented_reality.data.ARData;
-import com.jwetherell.augmented_reality.data.GooglePlacesDataSource;
-import com.jwetherell.augmented_reality.data.LocalDataSource;
 import com.jwetherell.augmented_reality.data.NetworkDataSource;
 import com.jwetherell.augmented_reality.ui.Marker;
 import com.jwetherell.augmented_reality.widget.VerticalTextView;
@@ -47,6 +45,8 @@ public class PlacesCameraActivity extends AugmentedReality {
     private static Toast myToast = null;
     private static VerticalTextView text = null;
 
+    public static String types;
+
     /**
      * {@inheritDoc}
      */
@@ -55,6 +55,9 @@ public class PlacesCameraActivity extends AugmentedReality {
         super.onCreate(savedInstanceState);
 
         // Create toast
+        types = getIntent().getStringExtra("types");
+        Log.d("places", types);
+
         myToast = new Toast(getApplicationContext());
         myToast.setGravity(Gravity.CENTER, 0, 0);
         // Creating our custom text view, and setting text/rotation
@@ -69,8 +72,8 @@ public class PlacesCameraActivity extends AugmentedReality {
         myToast.setDuration(Toast.LENGTH_SHORT);
 
         // Local
-        LocalDataSource localData = new LocalDataSource(this.getResources());
-        ARData.addMarkers(localData.getMarkers());
+        /*LocalDataSource localData = new LocalDataSource(this.getResources());
+        ARData.addMarkers(localData.getMarkers());*/
 
         NetworkDataSource googlePlaces = new GooglePlacesDataSource(this.getResources());
         sources.put("googlePlaces", googlePlaces);
@@ -127,7 +130,7 @@ public class PlacesCameraActivity extends AugmentedReality {
     public void onLocationChanged(Location location) {
         super.onLocationChanged(location);
 
-        /*updateData(location.getLatitude(), location.getLongitude(), location.getAltitude());*/
+        updateData(location.getLatitude(), location.getLongitude(), location.getAltitude());
     }
 
     /**
@@ -184,5 +187,14 @@ public class PlacesCameraActivity extends AugmentedReality {
 
         ARData.addMarkers(markers);
         return true;
+    }
+
+    public static String getTypes() {
+        Log.d("places", "get types: " + types);
+        return types;
+    }
+
+    public static void setTypes(String types) {
+        PlacesCameraActivity.types = types;
     }
 }
