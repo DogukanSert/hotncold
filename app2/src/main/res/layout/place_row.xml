@@ -21,7 +21,7 @@
             android:background="@null"
             android:gravity="center"
             android:onClick="cameraButtonClicked"
-            android:src="@drawable/ic_camera" />
+            android:src="@drawable/ic_add_camera" />
 
     </LinearLayout>
 
