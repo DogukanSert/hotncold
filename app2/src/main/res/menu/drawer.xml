@@ -6,50 +6,50 @@
         <item
             android:id="@+id/map"
             android:checked="false"
-            android:icon="@drawable/ic_inbox_black"
+            android:icon="@drawable/ic_map1"
             android:title="@string/map_string" />
 
         <item
             android:id="@+id/mode"
             android:checked="false"
-            android:icon="@drawable/ic_star_black"
+            android:icon="@drawable/ic_switch"
             android:title="@string/switch_mode_string" />
 
         <item
             android:id="@+id/camera"
             android:checked="false"
-            android:icon="@drawable/ic_star_black"
+            android:icon="@drawable/ic_camera1"
             android:title="@string/camera" />
 
         <item
             android:id="@+id/places"
             android:checked="false"
-            android:icon="@drawable/ic_delete_black"
-            android:title="@string/logout_string" />
+            android:icon="@drawable/ic_places"
+            android:title="@string/places" />
 
         <item
             android:id="@+id/filters"
             android:checked="false"
-            android:icon="@drawable/ic_send_black"
+            android:icon="@drawable/ic_filter"
             android:title="@string/filters_string" />
 
         <item
             android:id="@+id/groups"
             android:checked="false"
-            android:icon="@drawable/ic_drafts_black"
+            android:icon="@drawable/ic_group"
             android:title="@string/groups_string" />
 
         <item
             android:id="@+id/settings"
             android:checked="false"
-            android:icon="@drawable/ic_email_black"
+            android:icon="@drawable/ic_req"
             android:title="Friend Request" />
 
 
         <item
             android:id="@+id/logout"
             android:checked="false"
-            android:icon="@drawable/ic_delete_black"
+            android:icon="@drawable/ic_logout"
             android:title="@string/logout_string" />
 
     </group>

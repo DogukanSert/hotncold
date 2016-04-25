@@ -189,8 +189,7 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
                         LatLng PERTH = new LatLng(Double.parseDouble(lat), Double.parseDouble(lon));
                         markers[i] = map.addMarker(new MarkerOptions()
                                 .position(PERTH)
-                                .draggable(true)
-                                .title(b.getString("id")));
+                                .draggable(true));
 
                         //}
                     }

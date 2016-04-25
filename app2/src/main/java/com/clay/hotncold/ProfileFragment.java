@@ -3,6 +3,7 @@ package com.clay.hotncold;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -167,15 +169,23 @@ public class ProfileFragment extends AppCompatActivity {
         //getting profile picture
         profileImage = (ImageView)findViewById(R.id.backdrop);
             //profileImage.setProfileId(profile.getId());
+        Glide.with(this).load(getProfilePicture(id)).centerCrop().into(profileImage);
+
+        User us = DBHandler.getUser(id);
+        TextView info = (TextView)findViewById(R.id.information);
+        info.setText("Email: " + us.getEmail() + "\nGender: " + us.getGender());
 
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        AppBarLayout appBarLayout = (AppBarLayout)findViewById(R.id.appbar);
+        appBarLayout.setExpanded(true, true);
+
         CollapsingToolbarLayout collapsingToolbar =
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbar.setTitle(mt.getUsername()+ " " + mt.getSurname());
+        collapsingToolbar.setTitle(mt.getUsername() + " " + mt.getSurname());
 
         loadBackdrop();
     }
@@ -195,5 +205,10 @@ public class ProfileFragment extends AppCompatActivity {
     public void getFriendListView(View view){
         Intent i = new Intent(this, FriendListActivity.class);
         startActivity(i);
+    }
+
+    public String getProfilePicture(String id)
+    {
+        return "http://graph.facebook.com/"+id+"/picture?type=large&redirect=true&width=600&height=600";
     }
 }

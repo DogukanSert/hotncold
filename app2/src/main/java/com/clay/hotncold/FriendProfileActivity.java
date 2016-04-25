@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -169,9 +170,11 @@ public class FriendProfileActivity extends AppCompatActivity {
         profileImage = (ImageView)findViewById(R.id.backdrop);
         //profileImage.setProfileId(profile.getId());
 
+        Glide.with(this).load(getProfilePicture(id)).centerCrop().into(profileImage);
         us = DBHandler.getUser(id);
+        TextView info = (TextView)findViewById(R.id.information);
+        info.setText("Email: " + us.getEmail() + "\nGender: " + us.getGender());
 
-        Log.d("kaan", us.getBeaconID() + " ismail");
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -200,5 +203,10 @@ public class FriendProfileActivity extends AppCompatActivity {
         in.putExtra("type", 0);
         in.putExtra("id", id);
         startActivity(in);
+    }
+
+    public String getProfilePicture(String id)
+    {
+        return "http://graph.facebook.com/"+id+"/picture?type=large&redirect=true&width=600&height=600";
     }
 }

@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
 
         //Initializing NavigationView
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView.setItemIconTintList(null);
 
         headerLayout =(RelativeLayout) navigationView.getHeaderView(0);
         profileimage = (ImageView) headerLayout.findViewById(R.id.profile_image);
@@ -405,7 +406,7 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
 
     public String getProfilePicture(String id)
     {
-        return "http://graph.facebook.com/"+id+"/picture?type=square";
+        return "http://graph.facebook.com/"+id+"/picture?type=large&redirect=true&width=600&height=600";
     }
     @Override
     public void fabButtonClicked(View v) {
