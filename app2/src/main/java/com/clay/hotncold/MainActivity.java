@@ -1,11 +1,14 @@
 package com.clay.hotncold;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.AdvertiseCallback;
 import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
 {
 
     //Defining Variables
+    private static final int REQUEST_ENABLE_BLUETOOTH = 1;//EYE
     private Toolbar toolbar;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
@@ -111,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
                 });
 
         checkBluetoothConnection();
-        new CreateBeacon(adv, advertiseCallback);
 
         Bundle parameters = new Bundle();
         parameters.putString("fields",
@@ -145,20 +148,14 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
                 switch (menuItem.getItemId()){
 
                     case R.id.map:
-                        Toast.makeText(getApplicationContext(),"Profile",Toast.LENGTH_SHORT).show();
                         MapFragment fragment = new MapFragment();
                         android.support.v4.app.FragmentTransaction fragmentTransaction1 = getSupportFragmentManager().beginTransaction();
                         fragmentTransaction1.replace(R.id.frame, fragment);
                         fragmentTransaction1.commit();
                         return true;
 
-                    case R.id.profile:
-                        return true;
-
-                    // For rest of the options we just show a toast on click
 
                     case R.id.mode:
-                        Toast.makeText(getApplicationContext(),"Beacon Selected",Toast.LENGTH_SHORT).show();
                         BeaconFragment fr = new BeaconFragment();
                         android.support.v4.app.FragmentTransaction fragmentTransaction3 = getSupportFragmentManager().beginTransaction();
                         fragmentTransaction3.replace(R.id.frame, fr);
@@ -175,28 +172,28 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
                         return true;
 
                     case R.id.filters:
-                        Toast.makeText(getApplicationContext(),"Filters Selected",Toast.LENGTH_SHORT).show();
                         FilterFragment fra = new FilterFragment();
                         android.support.v4.app.FragmentTransaction fragmentTransaction2 = getSupportFragmentManager().beginTransaction();
                         fragmentTransaction2.replace(R.id.frame, fra);
                         fragmentTransaction2.commit();
                         return true;
                     case R.id.groups:
-                        Toast.makeText(getApplicationContext(),"Groups Selected",Toast.LENGTH_SHORT).show();
                         GroupFragment frag = new GroupFragment();
                         android.support.v4.app.FragmentTransaction fragmentTransaction4 = getSupportFragmentManager().beginTransaction();
                         fragmentTransaction4.replace(R.id.frame, frag);
                         fragmentTransaction4.commit();
                         return true;
                     case R.id.settings:
-                        Toast.makeText(getApplicationContext(),"Settings Selected",Toast.LENGTH_SHORT).show();
+
                         return true;
-                    case R.id.logout:
+                    case R.id.places:
                         Toast.makeText(getApplicationContext(),"Log out Selected",Toast.LENGTH_SHORT).show();
                         PlaceFragment pf = new PlaceFragment();
                         android.support.v4.app.FragmentTransaction fragmentTransaction6 = getSupportFragmentManager().beginTransaction();
                         fragmentTransaction6.replace(R.id.frame, pf);
                         fragmentTransaction6.commit();
+                        return true;
+                    case R.id.logout:
                         return true;
                     default:
                         Toast.makeText(getApplicationContext(),"Somethings Wrong",Toast.LENGTH_SHORT).show();
@@ -232,26 +229,45 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_ENABLE_BLUETOOTH) {
+            if (resultCode == Activity.RESULT_OK) {
+                checkBluetoothConnection();
+            } else {
+                finish();
+            }
+        }
+    }
     private void checkBluetoothConnection() {
-        BluetoothManager btManager =
-                (BluetoothManager)this.getSystemService(Context.BLUETOOTH_SERVICE);
-        BluetoothAdapter btAdapter = btManager.getAdapter();
-        if (btAdapter == null || !btAdapter.isEnabled()) {
+        BluetoothManager manager = (BluetoothManager) getApplicationContext().getSystemService(
+                Context.BLUETOOTH_SERVICE);
+        BluetoothAdapter btAdapter = manager.getAdapter();
+        if (btAdapter == null) {
+            showFinishingAlertDialog("Bluetooth Error", "Bluetooth not detected on device");
+        } else if (!btAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, Constants.REQUEST_CODE_ENABLE_BLE);
+            this.startActivityForResult(enableBtIntent, REQUEST_ENABLE_BLUETOOTH);
+        } else if (!btAdapter.isMultipleAdvertisementSupported()) {
+            showFinishingAlertDialog("Not supported", "BLE advertising not supported on this device");
+        } else {
+            adv = btAdapter.getBluetoothLeAdvertiser();
+            advertiseCallback = createAdvertiseCallback();
+            new CreateBeacon(adv, advertiseCallback);
         }
-        else if (!btAdapter.isMultipleAdvertisementSupported()) {
-            Toast.makeText(this, "Not supported BLE advertising not supported on this device", Toast.LENGTH_SHORT).show();
-        }
-        if (btAdapter == null || !btAdapter.isEnabled()) {
-            Log.e("Bluetooth", "Can't enable Bluetooth");
-            Toast.makeText(this, "Can't enable Bluetooth", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        //scanner = btAdapter.getBluetoothLeScanner();
+    }
 
-        adv = btAdapter.getBluetoothLeAdvertiser();
-        advertiseCallback = createAdvertiseCallback();
+    private void showFinishingAlertDialog(String title, String message) {
+        new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                }).show();
     }
 
     private AdvertiseCallback createAdvertiseCallback() {

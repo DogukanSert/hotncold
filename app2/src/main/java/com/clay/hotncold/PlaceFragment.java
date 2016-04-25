@@ -37,8 +37,18 @@ public class PlaceFragment extends Fragment implements SearchView.OnQueryTextLis
     private RecyclerView recyclerView;
     private PlaceFragmentAdapter mAdapter;
 
+    public static String placeString;
+
     public PlaceFragment() {
         // Required empty public constructor
+    }
+
+    public static String getPlaces() {
+        return placeString;
+    }
+
+    public static void setPlaces(String places) {
+        PlaceFragment.placeString = places;
     }
 
     public static PlaceFragment newInstance(String param1, String param2) {
@@ -51,6 +61,7 @@ public class PlaceFragment extends Fragment implements SearchView.OnQueryTextLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
     }
 
@@ -67,6 +78,7 @@ public class PlaceFragment extends Fragment implements SearchView.OnQueryTextLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        placeString = "";
         View view = inflater.inflate(R.layout.fragment_place, container, false);
         //Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         setHasOptionsMenu(true);
@@ -178,7 +190,8 @@ public class PlaceFragment extends Fragment implements SearchView.OnQueryTextLis
         private final TypedValue mTypedValue = new TypedValue();
         private int mBackground;
         private List<Place> places = Collections.emptyList();
-        public List<Place> selectedPlaces;
+
+        public Place currentPlace;
 
 
         @Override
@@ -204,7 +217,6 @@ public class PlaceFragment extends Fragment implements SearchView.OnQueryTextLis
                 userNameTextView = (TextView) view.findViewById(R.id.places);
                 swipeLayout = (SwipeLayout) itemView.findViewById(R.id.swipe_places);
                 goToCameraButton = (ImageButton) itemView.findViewById(R.id.cameraButton);
-
             }
 
             @Override
@@ -275,7 +287,6 @@ public class PlaceFragment extends Fragment implements SearchView.OnQueryTextLis
             context.getTheme().resolveAttribute(R.attr.selectableItemBackground, mTypedValue, true);
             mBackground = mTypedValue.resourceId;
             places = items;
-            selectedPlaces = new ArrayList<>();
         }
 
         @Override
@@ -290,7 +301,7 @@ public class PlaceFragment extends Fragment implements SearchView.OnQueryTextLis
         public void onBindViewHolder(final ViewHolder holder, final int position) {
 
 
-            final Place currentPlace = places.get(position);
+            currentPlace = places.get(position);
             holder.mBoundString = currentPlace.getPlace_name();
             holder.userNameTextView.setText(currentPlace.getPlace_name());
             holder.swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
@@ -299,26 +310,27 @@ public class PlaceFragment extends Fragment implements SearchView.OnQueryTextLis
             // Drag From Right
             holder.swipeLayout.addDrag(SwipeLayout.DragEdge.Right, holder.swipeLayout.findViewById(R.id.bottom_wrapper));
 
-
             holder.goToCameraButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //need to go to the camera view
-                    selectedPlaces.add(currentPlace);
+                    String place = holder.userNameTextView.getText().toString();
+                    if (place.contains(" ")) {
+                        place = place.replace(" ", "_");
+                    }
                     places.remove(currentPlace);
-                    notifyDataSetChanged();
-                    Toast.makeText(v.getContext(), "Clicked on " + holder.userNameTextView.getText().toString(), Toast.LENGTH_SHORT).show();
+                    place = place.toLowerCase();
+                    placeString+= place + "|";
+                    Toast.makeText(v.getContext(), "Clicked on " + place, Toast.LENGTH_SHORT).show();
                     //notifyDataSetChanged();
 
                 }
             });
-
         }
         @Override
         public int getItemCount() {
             return places.size();
         }
     }
-
 }
 

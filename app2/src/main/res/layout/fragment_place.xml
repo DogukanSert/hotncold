@@ -3,8 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.clay.hotncold.PlaceFragment"
-    android:background="#ffffff"
-    android:backgroundTint="#ffffff">
+    android:background="#303030"
+    android:backgroundTint="#303030">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/place_list_recycler_view"

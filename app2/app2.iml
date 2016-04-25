@@ -118,8 +118,8 @@
     <orderEntry type="library" exported="" name="design-24.0.0-alpha2" level="project" />
     <orderEntry type="library" exported="" name="facebook-android-sdk-4.11.0" level="project" />
     <orderEntry type="library" exported="" name="cardview-v7-24.0.0-alpha2" level="project" />
-    <orderEntry type="library" exported="" name="jackson-core-2.2.2" level="project" />
     <orderEntry type="library" exported="" name="aws-android-sdk-s3-2.2.15" level="project" />
+    <orderEntry type="library" exported="" name="jackson-core-2.2.2" level="project" />
     <orderEntry type="library" exported="" name="jackson-databind-2.2.2" level="project" />
     <orderEntry type="library" exported="" name="tubesock-0.0.12" level="project" />
     <orderEntry type="library" exported="" name="aws-android-sdk-ddb-2.2.15" level="project" />

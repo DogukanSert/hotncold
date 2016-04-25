@@ -10,12 +10,6 @@
             android:title="@string/map_string" />
 
         <item
-            android:id="@+id/profile"
-            android:checked="false"
-            android:icon="@drawable/ic_inbox_black"
-            android:title="@string/my_profile_string" />
-
-        <item
             android:id="@+id/mode"
             android:checked="false"
             android:icon="@drawable/ic_star_black"
@@ -26,6 +20,12 @@
             android:checked="false"
             android:icon="@drawable/ic_star_black"
             android:title="@string/camera" />
+
+        <item
+            android:id="@+id/places"
+            android:checked="false"
+            android:icon="@drawable/ic_delete_black"
+            android:title="@string/logout_string" />
 
         <item
             android:id="@+id/filters"
@@ -43,7 +43,8 @@
             android:id="@+id/settings"
             android:checked="false"
             android:icon="@drawable/ic_email_black"
-            android:title="@string/settings_string" />
+            android:title="Friend Request" />
+
 
         <item
             android:id="@+id/logout"

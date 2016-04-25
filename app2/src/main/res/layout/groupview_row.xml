@@ -51,6 +51,7 @@
             android:layout_marginRight="16dp"/>
 
         <TextView
+            style="@style/TextColor"
             android:id="@+id/groupfriendname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

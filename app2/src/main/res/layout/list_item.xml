@@ -7,7 +7,9 @@
     <!-- Single ListItem -->
 
     <!-- Product Name -->
-    <TextView android:id="@+id/product_name"
+    <TextView
+        style="@style/TextColor"
+        android:id="@+id/product_name"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:padding="10dip"
