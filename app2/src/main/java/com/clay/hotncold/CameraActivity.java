@@ -2,6 +2,7 @@ package com.clay.hotncold;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.hardware.Sensor;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,6 +45,7 @@ public class CameraActivity extends AugmentedReality {
     private static final ThreadPoolExecutor exeService = new ThreadPoolExecutor(1, 1, 20, TimeUnit.SECONDS, queue);
     private static final Map<String, NetworkDataSource> sources = new ConcurrentHashMap<String, NetworkDataSource>();
     NetworkDataSource googlePlaces;
+    NetworkDataSource friendsData;
     public static int count;
     public static final int MAX=50;
 
@@ -82,8 +84,9 @@ public class CameraActivity extends AugmentedReality {
         LocalDataSource localData = new LocalDataSource(this.getResources());
         ARData.addMarkers(localData.getMarkers());
 
-        googlePlaces = new GooglePlacesDataSource(this.getResources());
-        sources.put("googlePlaces", googlePlaces);
+        friendsData = new FriendsDataSource(this.getResources());
+        sources.put("friendsData", friendsData);
+
     }
 
 
@@ -149,6 +152,12 @@ public class CameraActivity extends AugmentedReality {
         updateData(last.getLatitude(), last.getLongitude(), last.getAltitude());
     }
 
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        super.onAccuracyChanged(sensor, accuracy);
+        Log.d("accuracy", accuracy +"");
+    }
+
     private void updateData(final double lat, final double lon, final double alt) {
        try {
             exeService.execute(new Runnable() {
@@ -159,7 +168,6 @@ public class CameraActivity extends AugmentedReality {
                         return;
                     for (NetworkDataSource source : sources.values())
                         ARData.addMarkers(source.getMarkerList(type, id, ARData.getRadius()));
-                    Log.d("camerakaan", ARData.getMarkers().size() + "");
                 }
             });
         } catch (RejectedExecutionException rej) {

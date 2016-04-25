@@ -21,11 +21,11 @@ public class Constants {
 
     private Constants() {}
 
-    static final int REQUEST_CODE_PICK_ACCOUNT = 1000;
-    static final int REQUEST_CODE_ENABLE_BLE = 1001;
-    static final int REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR = 1002;
-    static final int REQUEST_CODE_PLACE_PICKER = 1003;
+    public static final int REQUEST_CODE_PICK_ACCOUNT = 1000;
+    public static final int REQUEST_CODE_ENABLE_BLE = 1001;
+    public static final int REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR = 1002;
+    public static final int REQUEST_CODE_PLACE_PICKER = 1003;
 
-    static final String AUTH_SCOPE = "oauth2:https://www.googleapis.com/auth/userlocation.beacon.registry";
-    static final String PREFS_NAME = "com.google.sample.beaconservice.Prefs";
+    public static final String AUTH_SCOPE = "oauth2:https://www.googleapis.com/auth/userlocation.beacon.registry";
+    public static final String PREFS_NAME = "com.google.sample.beaconservice.Prefs";
 }

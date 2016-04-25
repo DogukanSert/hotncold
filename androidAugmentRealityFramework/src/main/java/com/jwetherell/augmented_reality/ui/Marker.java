@@ -312,15 +312,16 @@ public class Marker implements Comparable<Marker> {
         if (location == null)
             throw new NullPointerException();
 
-        Location.distanceBetween(physicalLocation.getLatitude(), 
+        Location.distanceBetween(physicalLocation.getLatitude(),
                                  physicalLocation.getLongitude(), 
                                  location.getLatitude(),
                                  location.getLongitude(), 
                                  distanceArray);
-        distance = distanceArray[0];
+        distance = distanceArray[0];/*distFrom((float)location.getLatitude(), (float)location.getLongitude(),
+                (float)physicalLocation.getLatitude(),(float)physicalLocation.getLongitude());*/
 
 
-        Log.d("kaan", "distance " + distance + " ");
+        Log.d("accuracy", "distance " + distance + " ");
     }
 
     /**

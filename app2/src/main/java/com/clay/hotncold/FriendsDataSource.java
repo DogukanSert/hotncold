@@ -25,7 +25,7 @@ import java.util.List;
  * 
  * @author Justin Wetherell <phishman3579@gmail.com>
  */
-public class GooglePlacesDataSource extends NetworkDataSource {
+public class FriendsDataSource extends NetworkDataSource {
 
 	private static Bitmap icon = null;
 
@@ -37,7 +37,7 @@ public class GooglePlacesDataSource extends NetworkDataSource {
     public static int count;
     String parts[];
 
-	public GooglePlacesDataSource(Resources res) {
+	public FriendsDataSource(Resources res) {
 		if (res == null) throw new NullPointerException();
 
         count=0;
@@ -83,6 +83,8 @@ public class GooglePlacesDataSource extends NetworkDataSource {
     {
         Log.d("camerakaan", "Type: " + type + " id: " + id);
         if(count>MAX || count==0){
+            locs.clear();
+            users.clear();
             if(type==2){
                 Log.d("camerakaan", type +"");
                 for(String s : friends) {
@@ -99,8 +101,6 @@ public class GooglePlacesDataSource extends NetworkDataSource {
                 }
             }
             else if(type == 0){
-                locs.clear();
-                users.clear();
                 locs.add(DBHandler.getFriendLoc(id));
                 users.add(DBHandler.getUser(id));
             }
@@ -117,7 +117,7 @@ public class GooglePlacesDataSource extends NetworkDataSource {
             if(distFrom(myLat, myLon, (float)us.getLat(), (float)us.getLon()) < radius*1000) {
                 icon = getFacebookPPBitmap(getProfilePicture(us.getId()));
                 markers.add(new IconMarker(u.getUsername() + " " + u.getSurname(),
-                        us.getLat(), us.getLon(), 0, Color.RED, icon, u.getFacebookID()));
+                        us.getLat(), us.getLon(), us.getAlt(), Color.RED, icon, u.getFacebookID()));
                 Log.d("camerakaan", us.getId());
             }
         }
@@ -129,7 +129,7 @@ public class GooglePlacesDataSource extends NetworkDataSource {
                 if(distFrom(myLat, myLon, (float)us.getLat(), (float)us.getLon()) < radius*1000) {
                     icon = getFacebookPPBitmap(getProfilePicture(us.getId()));
                     markers.add(new IconMarker(u.getUsername() + " " + u.getSurname(),
-                            us.getLat(), us.getLon(), 0, Color.RED, icon, u.getFacebookID()));
+                            us.getLat(), us.getLon(), us.getAlt(), Color.RED, icon, u.getFacebookID()));
                     Log.d("camerakaan", us.getId());
                 }
             }
@@ -144,13 +144,15 @@ public class GooglePlacesDataSource extends NetworkDataSource {
                 if(distFrom(myLat, myLon, (float)us.getLat(), (float)us.getLon()) < radius*1000) {
                     icon = getFacebookPPBitmap(getProfilePicture(us.getId()));
                     markers.add(new IconMarker(u.getUsername() + " " + u.getSurname(),
-                            us.getLat(), us.getLon(), 0, Color.RED, icon, u.getFacebookID()));
+                            us.getLat(), us.getLon(), us.getAlt(), Color.RED, icon, u.getFacebookID()));
                     Log.d("camerakaan", us.getId());
                 }
             }
 
         }
         count++;
+
+        Log.d("count", count + " count");
         return markers;
     }
 

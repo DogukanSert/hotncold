@@ -1,6 +1,11 @@
 package com.clay.hotncold;
 
 import android.app.FragmentManager;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.AdvertiseCallback;
+import android.bluetooth.le.BluetoothLeAdvertiser;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -56,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
     String mail;
     CircleImageView s;
     ImageView profileimage;
+    private AdvertiseCallback advertiseCallback;
+    private static BluetoothLeAdvertiser adv;
 
     RelativeLayout headerLayout;
 
@@ -102,6 +109,9 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
 
                     }
                 });
+
+        checkBluetoothConnection();
+        new CreateBeacon(adv, advertiseCallback);
 
         Bundle parameters = new Bundle();
         parameters.putString("fields",
@@ -218,6 +228,64 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
 
     }
 
+    private void checkBluetoothConnection() {
+        BluetoothManager btManager =
+                (BluetoothManager)this.getSystemService(Context.BLUETOOTH_SERVICE);
+        BluetoothAdapter btAdapter = btManager.getAdapter();
+        if (btAdapter == null || !btAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, Constants.REQUEST_CODE_ENABLE_BLE);
+        }
+        else if (!btAdapter.isMultipleAdvertisementSupported()) {
+            Toast.makeText(this, "Not supported BLE advertising not supported on this device", Toast.LENGTH_SHORT).show();
+        }
+        if (btAdapter == null || !btAdapter.isEnabled()) {
+            Log.e("Bluetooth", "Can't enable Bluetooth");
+            Toast.makeText(this, "Can't enable Bluetooth", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        //scanner = btAdapter.getBluetoothLeScanner();
+
+        adv = btAdapter.getBluetoothLeAdvertiser();
+        advertiseCallback = createAdvertiseCallback();
+    }
+
+    private AdvertiseCallback createAdvertiseCallback() {
+        return new AdvertiseCallback() {
+            @Override
+            public void onStartFailure(int errorCode) {
+                switch (errorCode) {
+                    case ADVERTISE_FAILED_DATA_TOO_LARGE:
+                        showToastAndLogError("ADVERTISE_FAILED_DATA_TOO_LARGE");
+                        break;
+                    case ADVERTISE_FAILED_TOO_MANY_ADVERTISERS:
+                        showToastAndLogError("ADVERTISE_FAILED_TOO_MANY_ADVERTISERS");
+                        break;
+                    case ADVERTISE_FAILED_ALREADY_STARTED:
+                        showToastAndLogError("ADVERTISE_FAILED_ALREADY_STARTED");
+                        break;
+                    case ADVERTISE_FAILED_INTERNAL_ERROR:
+                        showToastAndLogError("ADVERTISE_FAILED_INTERNAL_ERROR");
+                        break;
+                    case ADVERTISE_FAILED_FEATURE_UNSUPPORTED:
+                        showToastAndLogError("ADVERTISE_FAILED_FEATURE_UNSUPPORTED");
+                        break;
+                    default:
+                        showToastAndLogError("startAdvertising failed with unknown error " + errorCode);
+                        break;
+                }
+            }
+        };
+    }
+    private void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    private void showToastAndLogError(String message) {
+        showToast(message);
+        Log.e("HEY", message);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -327,8 +395,6 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
         transaction.commit();
     }
 
-
-
     // TODO: DB işi var yine amk
     public void doneButtonClicked(View v) {
         ArrayList<String> friends = CreateGroupFragment.getSelectedfriend();
@@ -357,6 +423,4 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
         transaction.replace(R.id.frame, cb);
         transaction.commit();
     }
-
-
 }

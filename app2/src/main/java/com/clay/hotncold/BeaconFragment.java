@@ -96,6 +96,7 @@ public class BeaconFragment extends Fragment {
 
 
 
+
     void scanBeacon() {
         scanCallback = new ScanCallback();
         scanner.startScan(SCAN_FILTERS, SCAN_SETTINGS, scanCallback);
@@ -232,12 +233,12 @@ public class BeaconFragment extends Fragment {
     private void setRecyclerView(RecyclerView recyclerView) {
         recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
 
-            mAdapter = new SimpleStringRecyclerViewAdapter(getActivity(),
-                    getBeaconNames());
-            recyclerView.setAdapter(mAdapter);
-           // mAdapter.notifyDataSetChanged();
+        mAdapter = new SimpleStringRecyclerViewAdapter(getActivity(),
+                getBeaconNames());
+        recyclerView.setAdapter(mAdapter);
+        // mAdapter.notifyDataSetChanged();
 
-            Log.v(TAG, "array list is empty on create " + mAdapter.beaconsNames.toString());
+        Log.v(TAG, "array list is empty on create " + mAdapter.beaconsNames.toString());
 
     }
 
@@ -249,9 +250,9 @@ public class BeaconFragment extends Fragment {
         int min = c.get(Calendar.MINUTE);
         for(int i = 0; i < arrayList.size(); i++ ) {
             double distance = getDistance( arrayList.get(i).rssi, arrayList.get(i).txPower );
-            beaconNames.add(arrayList.get(i).getHexId() + "\n" + distance + "m" );
+            beaconNames.add(arrayList.get(i).getHexId() + "-" + distance + "m" );
 
-            Log.v(TAG, "distance" + distance);
+            Log.v("beaconname", beaconNames.get(i));
             //beaconNames.add(arrayList.get(i).getHexId() + "\n" + arrayList.get(i).rssi + "m" + "\n" + date + " ( " + hour + ":" + min + " ) ");
         }
         return beaconNames;
@@ -265,7 +266,7 @@ public class BeaconFragment extends Fragment {
      * d = 10 ^ ((TxPower - RSSI) / (10 * n))
      */
 
-        return Math.pow(10, ((double) txPower - rssi) / (10 * 3))/100;
+        return Math.pow(10, (double)(txPower - rssi) / (10 * 3))/1000;
     }
 
     public static class SimpleStringRecyclerViewAdapter
@@ -337,12 +338,14 @@ public class BeaconFragment extends Fragment {
             if(holder == null ) {
                 Log.v(TAG, "holderr is null");
             }
-            friendid = BeaconFragment.hexToString(beaconsNames.get(position));
+            String parts[]= BeaconFragment.hexToString(beaconsNames.get(position)).split("-");
+            friendid=parts[0];
+
 
             User us = DBHandler.getUser(friendid);
 
             holder.mBoundString = beaconsNames.get(position);
-            holder.userNameTextView.setText(us.getUsername() + " " + us.getSurname());
+            holder.userNameTextView.setText(us.getUsername() + " " + us.getSurname()+ "\n" + parts[1]);
             holder.swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
 
             // Drag From Left
@@ -521,9 +524,10 @@ public class BeaconFragment extends Fragment {
 
     public static String hexToString(String s)
     {
-        String hexStr = s;
+        String parts[]= s.split("-");
+        String hexStr = s.substring(0,16);
         BigInteger bigInt = new BigInteger(hexStr, 16);
-        return bigInt.toString();
+        return bigInt.toString()+ "-" + parts[1];
     }
 
 

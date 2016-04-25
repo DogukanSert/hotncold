@@ -58,8 +58,10 @@ public class ProfileFragment extends AppCompatActivity {
             userName = (TextView) findViewById(R.id.information);
             userName.setText(profile.getName());
         }*/
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         String id = AccessToken.getCurrentAccessToken().getUserId();
+        User mt = DBHandler.getUser(id);
 
         GraphRequest g =new GraphRequest(
             AccessToken.getCurrentAccessToken(),
@@ -173,7 +175,7 @@ public class ProfileFragment extends AppCompatActivity {
 
         CollapsingToolbarLayout collapsingToolbar =
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbar.setTitle(id);
+        collapsingToolbar.setTitle(mt.getUsername()+ " " + mt.getSurname());
 
         loadBackdrop();
     }

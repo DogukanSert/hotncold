@@ -25,7 +25,7 @@ import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
 
-class Utils {
+public class Utils {
   private Utils() {}  // static functions only
 
   private static final char[] HEX = "0123456789ABCDEF".toCharArray();
