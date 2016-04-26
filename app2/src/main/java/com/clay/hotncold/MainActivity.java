@@ -1,6 +1,5 @@
 package com.clay.hotncold;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.bluetooth.BluetoothAdapter;
@@ -116,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
                     }
                 });
 
-        checkBluetoothConnection();
+        //checkBluetoothConnection();
 
         Bundle parameters = new Bundle();
         parameters.putString("fields",
@@ -158,10 +157,10 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
 
 
                     case R.id.mode:
-                        BeaconFragment fr = new BeaconFragment();
+                        /*BeaconFragment fr = new BeaconFragment();
                         android.support.v4.app.FragmentTransaction fragmentTransaction3 = getSupportFragmentManager().beginTransaction();
                         fragmentTransaction3.replace(R.id.frame, fr);
-                        fragmentTransaction3.commit();
+                        fragmentTransaction3.commit();*/
 
                         return true;
 
@@ -232,13 +231,13 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_ENABLE_BLUETOOTH) {
+        /*if (requestCode == REQUEST_ENABLE_BLUETOOTH) {
             if (resultCode == Activity.RESULT_OK) {
                 checkBluetoothConnection();
             } else {
                 finish();
             }
-        }
+        }*/
     }
     private void checkBluetoothConnection() {
         BluetoothManager manager = (BluetoothManager) getApplicationContext().getSystemService(

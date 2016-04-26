@@ -28,9 +28,17 @@ public class ItemViewHolder extends RecyclerView.ViewHolder {
         birthday_TextView = (TextView) itemView.findViewById(R.id.birthday);
     }
 
-    public void bind(FilterObject filterObject) {
+    public void bind(final FilterObject filterObject,final OnItemClickListener listener) {
         name_TextView.setText(filterObject.getName());
         gender_TextView.setText(filterObject.getGender());
         birthday_TextView.setText(filterObject.getBirthday());
+
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onItemClick(filterObject);
+            }
+        });
+
     }
 }

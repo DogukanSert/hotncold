@@ -5,12 +5,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class GroupFragment extends Fragment {
+public class GroupFragment extends Fragment implements SearchView.OnQueryTextListener {
 
     private List<Group> myGroups;
     private static ArrayList<Group> deletedGroups;
@@ -44,6 +50,34 @@ public class GroupFragment extends Fragment {
     }
 
     GroupFragmentListener listener;
+
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        final List<Group> filteredGroup = filter(myGroups, query);
+        mAdapter.animateTo(filteredGroup);
+        recyclerView.scrollToPosition(0);
+        return true;
+    }
+
+    private List<Group> filter(List<Group> models, String query) {
+        Log.d("filter", "models size: " + models.size() + "");
+        query = query.toLowerCase();
+        final List<Group> filteredModelList = new ArrayList<>();
+        for (Group model : models) {
+            final String text = model.getGroupName().toLowerCase();
+            if (text.contains(query)) {
+                filteredModelList.add(model);
+            }
+        }
+        return filteredModelList;
+    }
+
     //interface
     public interface GroupFragmentListener {
         void fabButtonClicked(View v);
@@ -88,6 +122,14 @@ public class GroupFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+        final MenuItem item = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+        searchView.setOnQueryTextListener(this);
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -209,6 +251,59 @@ public class GroupFragment extends Fragment {
             @Override
             public String toString() {
                 return super.toString() + " '" + userNameTextView.getText();
+            }
+        }
+
+        public Group removeItem(int position) {
+            final Group model = groups.remove(position);
+            notifyItemRemoved(position);
+            return model;
+        }
+
+        public void addItem(int position, Group model) {
+            groups.add(position, model);
+            notifyItemInserted(position);
+        }
+
+        public void moveItem(int fromPosition, int toPosition) {
+            final Group model = groups.remove(fromPosition);
+            groups.add(toPosition, model);
+            notifyItemMoved(fromPosition, toPosition);
+        }
+
+        //Search algorithms
+
+        public void animateTo(List<Group> models) {
+            applyAndAnimateRemovals(models);
+            applyAndAnimateAdditions(models);
+            applyAndAnimateMovedItems(models);
+        }
+
+        private void applyAndAnimateRemovals(List<Group> newModels) {
+            for (int i = groups.size() - 1; i >= 0; i--) {
+                final Group model = groups.get(i);
+                if (!newModels.contains(model)) {
+                    removeItem(i);
+                }
+            }
+        }
+
+        private void applyAndAnimateAdditions(List<Group> newModels) {
+            for (int i = 0, count = newModels.size(); i < count; i++) {
+                final Group model = newModels.get(i);
+                if (!groups.contains(model)) {
+                    addItem(i, model);
+                }
+            }
+        }
+
+        private void applyAndAnimateMovedItems(List<Group> newModels) {
+            for (int toPosition = newModels.size() - 1; toPosition >= 0; toPosition--) {
+                final Group model = newModels.get(toPosition);
+                final int fromPosition = groups.indexOf(model);
+                if (fromPosition >= 0 && fromPosition != toPosition) {
+                    moveItem(fromPosition, toPosition);
+                }
             }
         }
 

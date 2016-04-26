@@ -5,6 +5,8 @@ import android.util.Log;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBAttribute;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBHashKey;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.DynamoDBTable;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,7 +18,7 @@ import java.math.BigInteger;
  */
 
 @DynamoDBTable(tableName = "users")
-public class User {
+public class User implements ClusterItem {
 
     public String username;
     public String surname;
@@ -141,6 +143,12 @@ public class User {
             result= "0"+result;
 
         return result;
+    }
+
+    @Override
+    public LatLng getPosition() {
+        UserLoc u = DBHandler.getFriendLoc(getFacebookID());
+        return new LatLng(u.getLat(), u.getLon());
     }
 }
 

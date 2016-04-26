@@ -15,16 +15,19 @@ import java.util.List;
  * Created by dogukan on 25.04.16.
  */
 public class FilterAdapter extends RecyclerView.Adapter<ItemViewHolder> {
-    private List<FilterObject> mFilterObject;
 
-    public FilterAdapter(List<FilterObject> mFilterObject) {
+    private List<FilterObject> mFilterObject;
+    private final OnItemClickListener listener;
+
+    public FilterAdapter(List<FilterObject> mFilterObject,OnItemClickListener listener) {
+        this.listener = listener;
         this.mFilterObject = mFilterObject;
     }
 
     @Override
     public void onBindViewHolder(ItemViewHolder itemViewHolder, int i) {
         final FilterObject model = mFilterObject.get(i);
-        itemViewHolder.bind(model);
+        itemViewHolder.bind(model, listener);
         Glide.with(itemViewHolder.mView_ImageView.getContext())
                 .load( getProfilePicture( model.getFbID() ) )
                 .fitCenter()

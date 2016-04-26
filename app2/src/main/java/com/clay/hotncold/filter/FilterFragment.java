@@ -1,5 +1,6 @@
 package com.clay.hotncold.filter;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -13,6 +14,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.clay.hotncold.FriendProfileActivity;
 import com.clay.hotncold.R;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +69,13 @@ public class FilterFragment extends Fragment implements SearchView.OnQueryTextLi
                     birthday, u.getFacebookID()));
         }
 
-        adapter = new FilterAdapter(mFilterObject);
+        adapter = new FilterAdapter(mFilterObject, new OnItemClickListener() {
+            @Override public void onItemClick(FilterObject item) {
+                Intent i = new Intent(getContext(), FriendProfileActivity.class);
+                i.putExtra("id", item.getFbID());
+                startActivity(i);
+            }
+        });
         recyclerview.setAdapter(adapter);
 
         return view;

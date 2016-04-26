@@ -108,6 +108,8 @@ public class LoginActivity extends AppCompatActivity {
                         DBHandler.insertLatLong(userLoc);
                         DBHandler.userInsert(user);
 
+                        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(i);
                         if (newUser == null) {
                             Log.d("kaan", "null");
                         }
@@ -154,9 +156,6 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
                 ).executeAsync();
-
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(i);
             }
 
             @Override
