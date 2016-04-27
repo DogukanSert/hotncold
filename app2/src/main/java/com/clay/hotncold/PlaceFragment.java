@@ -21,7 +21,6 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
@@ -315,9 +314,6 @@ public class PlaceFragment extends Fragment implements SearchView.OnQueryTextLis
                     notifyDataSetChanged();
                     place = place.toLowerCase();
                     placeString+= place + "|";
-                    Toast.makeText(v.getContext(), "Clicked on " + place, Toast.LENGTH_SHORT).show();
-
-
                 }
             });
         }

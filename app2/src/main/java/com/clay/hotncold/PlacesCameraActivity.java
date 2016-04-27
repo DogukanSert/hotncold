@@ -70,6 +70,7 @@ public class PlacesCameraActivity extends AugmentedReality {
         myToast.setView(text);
         // Setting duration and displaying the toast
         myToast.setDuration(Toast.LENGTH_SHORT);
+        ARData.removeMarkers();
 
         // Local
         /*LocalDataSource localData = new LocalDataSource(this.getResources());

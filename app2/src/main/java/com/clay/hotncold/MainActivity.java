@@ -32,6 +32,7 @@ import com.clay.hotncold.group.GroupFragment;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
 
 import org.json.JSONObject;
@@ -116,7 +117,6 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
         request.setParameters(parameters);
         request.executeAsync();
 
-        Toast.makeText(getApplicationContext(),"Profile",Toast.LENGTH_SHORT).show();
         MapFragment fragment = new MapFragment();
         //FilterFragment fragment = new FilterFragment();
         android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -185,6 +185,10 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
                         fragmentTransaction6.commit();
                         return true;
                     case R.id.logout:
+                        LoginManager.getInstance().logOut();
+                        Intent log = new Intent(getApplicationContext(),LoginActivity.class);
+                        startActivity(log);
+
                         return true;
                     default:
                         Toast.makeText(getApplicationContext(),"Somethings Wrong",Toast.LENGTH_SHORT).show();
