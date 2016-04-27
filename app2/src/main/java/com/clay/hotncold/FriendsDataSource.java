@@ -73,6 +73,7 @@ public class FriendsDataSource extends NetworkDataSource {
      * Type 0 -> single user with id
      * Type 1 -> group members with groupname id
      * Type 2 -> all friends of user with id
+     * Type 3 -> beacons in string with "-"
      *
      * */
 
@@ -103,6 +104,16 @@ public class FriendsDataSource extends NetworkDataSource {
             else if(type == 0){
                 locs.add(DBHandler.getFriendLoc(id));
                 users.add(DBHandler.getUser(id));
+            }
+            else if(type == 3)
+            {
+                String parts[]=id.split("-");
+                for(String s: parts){
+                    if(!s.equals("")){
+                        locs.add(DBHandler.getFriendLoc(s));
+                        users.add(DBHandler.getUser(s));
+                    }
+                }
             }
             count=0;
         }
@@ -150,6 +161,22 @@ public class FriendsDataSource extends NetworkDataSource {
             }
 
         }
+
+        else if(type ==3)
+        {
+            for(int i =0; i<users.size(); i++)
+            {
+                Log.d("camerakaan", i + "th getting friend" + radius);
+                UserLoc us = locs.get(i);
+                User u = users.get(i);
+                if(distFrom(myLat, myLon, (float)us.getLat(), (float)us.getLon()) < radius*1000) {
+                    icon = getFacebookPPBitmap(getProfilePicture(us.getId()));
+                    markers.add(new IconMarker(u.getUsername() + " " + u.getSurname(),
+                            us.getLat(), us.getLon(), us.getAlt(), Color.RED, icon, u.getFacebookID()));
+                    Log.d("camerakaan", us.getId());
+                }
+            }
+        }
         count++;
 
         Log.d("count", count + " count");
@@ -169,7 +196,7 @@ public class FriendsDataSource extends NetworkDataSource {
         return dist;
     }
 
-    private static Bitmap getFacebookPPBitmap(String url){
+    public static Bitmap getFacebookPPBitmap(String url){
         URL facebookProfileURL= null;
         Bitmap bitmap=null;
         try {
@@ -179,8 +206,7 @@ public class FriendsDataSource extends NetworkDataSource {
             e.printStackTrace();
         }
 
-        if(bitmap==null)
-            Log.d("camerakaan", "bitmap is null");
+
 
         return bitmap;
     }

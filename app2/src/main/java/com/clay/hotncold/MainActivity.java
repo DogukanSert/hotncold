@@ -9,8 +9,6 @@ import android.bluetooth.le.BluetoothLeAdvertiser;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -38,11 +36,6 @@ import com.facebook.login.widget.ProfilePictureView;
 
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -115,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
                     }
                 });
 
-        //checkBluetoothConnection();
+        checkBluetoothConnection();
 
         Bundle parameters = new Bundle();
         parameters.putString("fields",
@@ -157,10 +150,10 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
 
 
                     case R.id.mode:
-                        /*BeaconFragment fr = new BeaconFragment();
+                        BeaconFragment fr = new BeaconFragment();
                         android.support.v4.app.FragmentTransaction fragmentTransaction3 = getSupportFragmentManager().beginTransaction();
                         fragmentTransaction3.replace(R.id.frame, fr);
-                        fragmentTransaction3.commit();*/
+                        fragmentTransaction3.commit();
 
                         return true;
 
@@ -308,7 +301,6 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
@@ -327,79 +319,12 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
         return super.onOptionsItemSelected(item);
     }
 
-    /*@Override
-    public void aboutButtonClicked(View v)
-    {
-
-        aboutFragment = new AboutFragment();
-        FragmentManager fm = getFragmentManager();
-        android.support.v4.app.FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        //transaction.hide(profileFragment);
-        transaction.replace(R.id.frame, aboutFragment);
-        transaction.commit();
-    } */
-
-    /*public void friendsButtonClicked(View v)
-    {
-
-        friendlistFragment = new FriendListFragment();
-        FragmentManager fm = getFragmentManager();
-        android.support.v4.app.FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        //transaction.hide(profileFragment);
-        transaction.replace(R.id.frame, friendlistFragment);
-        transaction.commit();
-    }*/
-
     @Override
     public void onBackPressed() {
         MapFragment fragment = new MapFragment();
         android.support.v4.app.FragmentTransaction fragmentTransaction1 = getSupportFragmentManager().beginTransaction();
         fragmentTransaction1.replace(R.id.frame, fragment);
         fragmentTransaction1.commit();
-    }
-
-    public Bitmap loadBitmap(String url)
-    {
-        Bitmap bm = null;
-        InputStream is = null;
-        BufferedInputStream bis = null;
-        try
-        {
-            URLConnection conn = new URL(url).openConnection();
-            conn.connect();
-            is = conn.getInputStream();
-            bis = new BufferedInputStream(is, 8192);
-            bm = BitmapFactory.decodeStream(bis);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        finally {
-            if (bis != null)
-            {
-                try
-                {
-                    bis.close();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-            if (is != null)
-            {
-                try
-                {
-                    is.close();
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return bm;
     }
 
     public String getProfilePicture(String id)
@@ -464,4 +389,13 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
     private static String removeLastChar(String str) {
         return str.substring(0,str.length()-1);
     }
+
+    public void goToCameraFromBeacon(View v)
+    {
+        Intent i = new Intent(this, CameraActivity.class);
+        i.putExtra("type", 3);
+        i.putExtra("id", BeaconFragment.getBeaconIds());
+        startActivity(i);
+    }
+
 }

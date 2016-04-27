@@ -80,15 +80,8 @@ public class PlaceFragment extends Fragment implements SearchView.OnQueryTextLis
         // Inflate the layout for this fragment
         placeString = "";
         View view = inflater.inflate(R.layout.fragment_place, container, false);
-        //Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         setHasOptionsMenu(true);
-        //Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        //getActivity().setSupportActionBar(toolbar);
-        //((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-        //((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
         ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
-        //actionBar.setDisplayHomeAsUpEnabled(true);
-        //setHasOptionsMenu(true);
         myPlaces = new ArrayList<>();
         recyclerView = (RecyclerView)view.findViewById(R.id.place_list_recycler_view);
         mAdapter = new PlaceFragmentAdapter(getActivity(),getData());
@@ -301,7 +294,7 @@ public class PlaceFragment extends Fragment implements SearchView.OnQueryTextLis
         public void onBindViewHolder(final ViewHolder holder, final int position) {
 
 
-            currentPlace = places.get(position);
+            final Place currentPlace = places.get(position);
             holder.mBoundString = currentPlace.getPlace_name();
             holder.userNameTextView.setText(currentPlace.getPlace_name());
             holder.swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
@@ -319,10 +312,11 @@ public class PlaceFragment extends Fragment implements SearchView.OnQueryTextLis
                         place = place.replace(" ", "_");
                     }
                     places.remove(currentPlace);
+                    notifyDataSetChanged();
                     place = place.toLowerCase();
                     placeString+= place + "|";
                     Toast.makeText(v.getContext(), "Clicked on " + place, Toast.LENGTH_SHORT).show();
-                    //notifyDataSetChanged();
+
 
                 }
             });
@@ -333,4 +327,3 @@ public class PlaceFragment extends Fragment implements SearchView.OnQueryTextLis
         }
     }
 }
-

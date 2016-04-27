@@ -87,8 +87,7 @@ public class DBHandler {
         String id=AccessToken.getCurrentAccessToken().getUserId();
         Friendship hisriendship = mapper.load(Friendship.class, his);
 
-        if(hisriendship == null)
-            Log.d("addFriend", his);
+
 
         String hisFriends = hisriendship.getMyFriends();
 
@@ -100,9 +99,9 @@ public class DBHandler {
 
     public static void addMeToFriends(String his)
     {
-        Log.d("elif", "kaaan");
+        //Log.d("elif", "kaaan");
         new AddMeToFriend().execute(his);
-        Log.d("elif", "kaaan");
+        //Log.d("elif", "kaaan");
     }
 
     private static void deleteFriendsAsync(ArrayList<String> del)
@@ -114,7 +113,7 @@ public class DBHandler {
         String id=AccessToken.getCurrentAccessToken().getUserId();
         Friendship myFriendship = mapper.load(Friendship.class, id);
 
-        Log.d("elif", "gorki");
+        //Log.d("elif", "gorki");
         String myFriends = myFriendship.getMyFriends();
 
         String friends[]=myFriends.split("-");
@@ -138,7 +137,7 @@ public class DBHandler {
         for(int i=0; i<newFriends.size(); i++)
         {
             newVersion += newFriends.get(i) + "-";
-            Log.d("kaan", newFriends.get(i));
+            //Log.d("kaan", newFriends.get(i));
         }
         myFriendship.setMyFriends(newVersion);
         mapper.save(myFriendship);
@@ -146,9 +145,9 @@ public class DBHandler {
 
     public static void deleteFriends(ArrayList<String> del)
     {
-        Log.d("elif", "kaaan");
+        //Log.d("elif", "kaaan");
         new DeleteFriends().execute(del);
-        Log.d("elif", "kaaan");
+        //Log.d("elif", "kaaan");
     }
 
     private static void updateLatLongAsync(UserLoc u){
@@ -253,13 +252,13 @@ public class DBHandler {
     public ArrayList<User> getFriends(String me)
     {
         ArrayList<String> f = getFriendIds(me);
-        Log.d("kaan", "11");
+        //Log.d("kaan", "11");
 
         ArrayList<User> friends = new ArrayList<>();
-        Log.d("kaan", "12");
+        //Log.d("kaan", "12");
         for(int i=0; i<f.size();i++)
             friends.add(getUser(f.get(i)));
-        Log.d("kaan", "13");
+        //Log.d("kaan", "13");
 
         return friends;
     }
@@ -273,7 +272,7 @@ public class DBHandler {
 
         if(u==null)
             return null;
-        Log.d("ckaan", u.toString());
+        //Log.d("ckaan", u.toString());
 
         return u;
     }
@@ -328,7 +327,7 @@ public class DBHandler {
         try {
             groups = x.get();
         } catch (InterruptedException | ExecutionException e) {
-            Log.d("kaan", e.toString());
+            //Log.d("kaan", e.toString());
         }
         return groups;
     }
@@ -556,9 +555,9 @@ public class DBHandler {
             AsyncTask<ArrayList<String>, Void, Void> {
 
         protected Void doInBackground(ArrayList<String>... u) {
-            Log.d("elif", "kdog");
+            //Log.d("elif", "kdog");
             DBHandler.deleteFriendsAsync(u[0]);
-            Log.d("elif", "mira");
+            //Log.d("elif", "mira");
             return null;
         }
     }

@@ -182,17 +182,15 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
                 public void handleMessage(Message msg) {
                     Bundle b = msg.getData();
                     int i = b.getInt("i");
+                    String id= b.getString("id");
                     String lat = b.getString("lat");
                     String lon = b.getString("lon");
                     if(MapFragment.isFirst()) {
-                        //if (Double.parseDouble(lat) != 0 || Double.parseDouble(lon) != 0) {
                         LatLng PERTH = new LatLng(Double.parseDouble(lat), Double.parseDouble(lon));
                         markers[i] = map.addMarker(new MarkerOptions()
                                 .position(PERTH)
                                 .draggable(true)
                                 .title(b.getString("id")));
-
-                        //}
                     }
 
                     else
@@ -235,7 +233,7 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
         alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");
 
         alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog,int which) {
+            public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 getContext().startActivity(intent);
                 dialog.cancel();
@@ -296,5 +294,10 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    public String getProfilePicture(String id)
+    {
+        return "http://graph.facebook.com/"+id+"/picture?type=large&redirect=true&width=600&height=600";
     }
 }

@@ -321,7 +321,7 @@ public class Marker implements Comparable<Marker> {
                 (float)physicalLocation.getLatitude(),(float)physicalLocation.getLongitude());*/
 
 
-        Log.d("accuracy", "distance " + distance + " ");
+        //Log.d("accuracy", "distance " + distance + " ");
     }
 
     /**

@@ -235,7 +235,7 @@ public class GroupViewActivity extends AppCompatActivity {
         }
 
         String getProfilePicture( String userId ) {
-            return "http://graph.facebook.com/" + userId + "/picture?type=square";
+            return "http://graph.facebook.com/" + userId + "/picture?type=large&redirect=true&width=600&height=600";
         }
     }
 

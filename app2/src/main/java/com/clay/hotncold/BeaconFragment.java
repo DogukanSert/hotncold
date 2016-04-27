@@ -46,7 +46,7 @@ public class BeaconFragment extends Fragment {
     private static final String TAG = "EYE";
     private static final long SCAN_TIME_MILLIS = 2000;
 
-    public ArrayList<Beacon> arrayList;
+    public static ArrayList<Beacon> arrayList;
     private ScanCallback scanCallback;
     private BluetoothLeScanner scanner;
     private RecyclerView recyclerView;
@@ -420,7 +420,7 @@ public class BeaconFragment extends Fragment {
         }
 
         String getProfilePicture( String userId ) {
-            return "http://graph.facebook.com/" + userId + "/picture?type=square";
+            return "http://graph.facebook.com/" + userId + "/picture?type=large&redirect=true&width=600&height=600";
         }
     }
 
@@ -528,6 +528,17 @@ public class BeaconFragment extends Fragment {
         String hexStr = s.substring(0,16);
         BigInteger bigInt = new BigInteger(hexStr, 16);
         return bigInt.toString()+ "-" + parts[1];
+    }
+
+    public static String getBeaconIds() {
+        String beacon="";
+        for(Beacon b : arrayList)
+            beacon += hexToString(Utils.toHexString(b.id)) +"-";
+        return beacon;
+    }
+
+    public void setArrayList(ArrayList<Beacon> arrayList) {
+        this.arrayList = arrayList;
     }
 
 

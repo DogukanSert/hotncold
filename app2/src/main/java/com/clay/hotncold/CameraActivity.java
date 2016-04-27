@@ -155,7 +155,7 @@ public class CameraActivity extends AugmentedReality {
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         super.onAccuracyChanged(sensor, accuracy);
-        Log.d("accuracy", accuracy +"");
+        //Log.d("accuracy", accuracy +"");
     }
 
     private void updateData(final double lat, final double lon, final double alt) {

@@ -209,7 +209,7 @@ public class CreateGroupFragment extends Fragment {
             holder.addFriendButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    selectedUsers.add( holder.mBoundString);
+                    selectedUsers.add(holder.mBoundString);
                     Log.d("elif", holder.mBoundString);
                     users.remove(holder.mBoundString);
                     Log.d("elif", users.toString());
@@ -232,7 +232,7 @@ public class CreateGroupFragment extends Fragment {
         }
 
         String getProfilePicture( String userId ) {
-            return "http://graph.facebook.com/" + userId + "/picture?type=square";
+            return "http://graph.facebook.com/" + userId + "/picture?type=large&redirect=true&width=600&height=600";
         }
     }
 

@@ -78,14 +78,16 @@
         </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/scanButton"
+        android:id="@+id/goToCameraFromBeacon"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|right|end"
-        android:src="@drawable/ic_discuss"
+        android:src="@drawable/ic_wcamera"
         android:layout_margin="@dimen/fab_margin"
         android:clickable="true"
-        android:onClick="scanBeacons"/>
+        android:onClick="goToCameraFromBeacon"
+        android:background="#b70600"
+        app:backgroundTint="#b70600" />
 
 </android.support.design.widget.CoordinatorLayout>

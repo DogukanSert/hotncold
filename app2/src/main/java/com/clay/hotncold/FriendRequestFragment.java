@@ -284,7 +284,7 @@ public class FriendRequestFragment extends Fragment {
         }
 
         String getProfilePicture( String userId ) {
-            return "http://graph.facebook.com/" + userId + "/picture?type=square";
+            return "http://graph.facebook.com/" + userId + "/picture?type=large&redirect=true&width=600&height=600";
         }
     }
 
