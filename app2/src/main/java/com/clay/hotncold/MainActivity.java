@@ -179,7 +179,6 @@ public class MainActivity extends AppCompatActivity implements GroupFragment.Gro
 
                         return true;
                     case R.id.places:
-                        Toast.makeText(getApplicationContext(),"Log out Selected",Toast.LENGTH_SHORT).show();
                         PlaceFragment pf = new PlaceFragment();
                         android.support.v4.app.FragmentTransaction fragmentTransaction6 = getSupportFragmentManager().beginTransaction();
                         fragmentTransaction6.replace(R.id.frame, pf);

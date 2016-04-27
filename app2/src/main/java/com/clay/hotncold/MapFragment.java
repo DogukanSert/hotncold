@@ -191,6 +191,8 @@ public class MapFragment extends Fragment implements LocationListener, SensorEve
                                 .position(PERTH)
                                 .draggable(true)
                                 .title(b.getString("id")));
+                        if(markers[i].getPosition().latitude==0)
+                            markers[i].setVisible(false);
                     }
 
                     else
