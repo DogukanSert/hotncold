@@ -532,8 +532,14 @@ public class BeaconFragment extends Fragment {
 
     public static String getBeaconIds() {
         String beacon="";
-        for(Beacon b : arrayList)
-            beacon += hexToString(Utils.toHexString(b.id)) +"-";
+        for(Beacon b : arrayList) {
+
+            String hexStr = b.getHexId().substring(0,16);
+            BigInteger bigInt = new BigInteger(hexStr, 16);
+            Log.d("camerakaan", "beaconid " + bigInt);
+            beacon += bigInt + "-";
+        }
+        Log.d("camerakaan", beacon);
         return beacon;
     }
 

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -151,8 +152,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 ).executeAsync();
 
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(i);
+
             }
 
             @Override
@@ -173,5 +173,11 @@ public class LoginActivity extends AppCompatActivity {
         if (cbm.onActivityResult(requestCode, resultCode, data)) {
             return;
         }
+    }
+
+    public void continueToMap(View v)
+    {
+        Intent i = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(i);
     }
 }

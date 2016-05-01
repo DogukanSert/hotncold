@@ -33,4 +33,22 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="106dp"
         android:alpha="0.6" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        app:layout_anchor="@id/appbar"
+        app:layout_anchorGravity="bottom|right|end"
+        android:src="@drawable/ic_done"
+        android:clickable="true"
+        android:onClick="continueToMap"
+        android:background="#b70600"
+        app:backgroundTint="#b70600"
+        android:layout_marginLeft="@dimen/fab_margin"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:layout_marginBottom="29dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/imageView"
+        android:alpha="0.3" />
+
 </RelativeLayout>
